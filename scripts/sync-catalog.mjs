@@ -74,7 +74,7 @@ function readSeeds() {
 /* ---------- mapping TMDB data onto the game's fields ---------- */
 const G = { action: 28, adventure: 12, animation: 16, comedy: 35, crime: 80, documentary: 99, drama: 18, family: 10751,
   fantasy: 14, history: 36, horror: 27, music: 10402, mystery: 9648, romance: 10749, scifi: 878, thriller: 53, war: 10752, western: 37,
-  tvActionAdventure: 10759, tvKids: 10762, tvNews: 10763, tvReality: 10764, tvSciFiFantasy: 10765, tvWarPolitics: 10768 };
+  tvMovie: 10770, tvActionAdventure: 10759, tvKids: 10762, tvNews: 10763, tvReality: 10764, tvSciFiFantasy: 10765, tvWarPolitics: 10768 };
 const kwHas = (kws, ...words) => kws.some(k => words.some(w => k.includes(w)));
 const FAITH = ['christian', 'faith', 'bible', 'biblical', 'jesus', 'god', 'church', 'religio', 'pastor', 'gospel', 'prayer', 'worship', 'apostle', 'nun', 'priest'];
 const TRUE = ['based on true story', 'true story', 'biography', 'based on real', 'historical figure', 'biographical'];
@@ -85,7 +85,8 @@ const GRIEF = ['grief', 'loss of', 'death of', 'tearjerker', 'cancer', 'illness'
 const COMIC_TITLE = /^[A-Z][A-Za-z'.-]+(?: [A-Z][A-Za-z'.-]+){1,2}\s*(?::|\s[-–]\s)\s*\S/;
 function looksLikeSpecial(title, type, gids, kws, runtime) {
   return type === 'movie' && COMIC_TITLE.test(title || '')
-    && gids.length > 0 && gids.every(id => id === G.comedy || id === G.drama)
+    // TMDB files many Dry Bar sets as "TV Movie" (10770), which the game has no bucket for
+    && gids.length > 0 && gids.every(id => id === G.comedy || id === G.drama || id === G.tvMovie)
     && (!runtime || runtime <= 95)
     && kws.every(k => /comedy|comedian|stand.?up/.test(k));
 }
