@@ -27,7 +27,7 @@ const MOVIES = {
   // unrelated foreign film credited to a same-named studio
   902: { id: 902, title: 'Bommai', original_language: 'ta', release_date: '2023-06-16', runtime: 150, genres: [{ id: 18 }], keywords: kw(), credits: { cast: [] }, release_dates: { results: [] } },
   // Dry Bar style comedy special with no stand-up keyword and an odd "drama" genre
-  903: { id: 903, title: 'Kristin Key: Crafty', original_language: 'en', release_date: '2019-05-01', runtime: 62, genres: [{ id: 18 }], keywords: kw(), credits: { cast: [] }, release_dates: { results: [] } },
+  903: { id: 903, title: 'Kristin Key: Crafty', original_language: 'en', release_date: '2019-05-01', runtime: 62, genres: [{ id: 18 }, { id: 10770 }], keywords: kw(), credits: { cast: [] }, release_dates: { results: [] } },
   // dated but not out yet
   904: { id: 904, title: 'Rode to Ruin', original_language: 'en', release_date: '2099-03-01', runtime: 100, genres: [{ id: 18 }], keywords: kw(), credits: { cast: [] }, release_dates: { results: [] } },
   // film cut of a series that is also listed
