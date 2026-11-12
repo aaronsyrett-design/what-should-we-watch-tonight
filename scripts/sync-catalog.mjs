@@ -28,6 +28,9 @@ const TOKEN = (process.env.TMDB_TOKEN || '').trim();
 const OUT = resolve(ROOT, process.env.OUT || 'data/catalog.json');
 const IMG = 'https://image.tmdb.org/t/p/w500';
 const COMPANY_QUERY = 'Angel Studios';
+// TMDB company names we treat as Angel. "VidAngel Studios" is Angel's former name and holds the Dry Bar
+// comedy library. Other companies that merely contain "Angel" (or an unrelated studio abroad) are left out.
+const ANGEL_COMPANIES = /^(angel studios|vidangel studios)$/i;
 
 /* ---------- TMDB client ---------- */
 const isV3Key = /^[0-9a-f]{32}$/i.test(TOKEN);
@@ -78,6 +81,14 @@ const TRUE = ['based on true story', 'true story', 'biography', 'based on real',
 const STANDUP = ['stand-up', 'stand up comedy', 'standup'];
 const HEAVY = ['human trafficking', 'sex trafficking', 'holocaust', 'nazi', 'murder', 'war', 'school shooting', 'death', 'suicide', 'abuse', 'kidnapping'];
 const GRIEF = ['grief', 'loss of', 'death of', 'tearjerker', 'cancer', 'illness', 'adoption', 'foster'];
+// Dry Bar style stand-up specials are titled "First Last: Special Name" and rarely carry a stand-up keyword.
+const COMIC_TITLE = /^[A-Z][A-Za-z'.-]+(?: [A-Z][A-Za-z'.-]+){1,2}\s*(?::|\s[-–]\s)\s*\S/;
+function looksLikeSpecial(title, type, gids, kws, runtime) {
+  return type === 'movie' && COMIC_TITLE.test(title || '')
+    && gids.length > 0 && gids.every(id => id === G.comedy || id === G.drama)
+    && (!runtime || runtime <= 95)
+    && kws.every(k => /comedy|comedian|stand.?up/.test(k));
+}
 const UPLIFT = ['inspirational', 'hope', 'overcoming', 'redemption', 'forgiveness', 'underdog', 'perseverance', 'courage'];
 
 function ageFrom(cert) {
@@ -95,7 +106,7 @@ export function mapTitle(d, type) {
   const title = type === 'tv' ? d.name : d.title;
   const date = type === 'tv' ? d.first_air_date : d.release_date;
   const runtime = type === 'tv' ? (d.episode_run_time || [])[0] : d.runtime;
-  const standup = kwHas(kws, ...STANDUP);
+  const standup = kwHas(kws, ...STANDUP) || looksLikeSpecial(title, type, gids, kws, runtime);
   const faith = kwHas(kws, ...FAITH);
   const trueStory = kwHas(kws, ...TRUE) || has(G.history);
   const heavy = kwHas(kws, ...HEAVY) || has(G.war, G.crime, G.horror);
@@ -182,7 +193,11 @@ async function findSeed(seed) {
     const yearOf = r => Number(((type === 'tv' ? r.first_air_date : r.release_date) || '').slice(0, 4)) || null;
     const nameOf = r => norm(type === 'tv' ? r.name : r.title);
     const hit = list.find(r => nameOf(r) === wanted && (!seed.y || !yearOf(r) || Math.abs(yearOf(r) - seed.y) <= 1))
-             || list.find(r => (nameOf(r) === wanted || nameOf(r) === short) && (!seed.y || Math.abs((yearOf(r) || seed.y) - seed.y) <= 1));
+             || list.find(r => (nameOf(r) === wanted || nameOf(r) === short) && (!seed.y || Math.abs((yearOf(r) || seed.y) - seed.y) <= 1))
+             // TMDB often adds a subtitle ("Bonhoeffer: Pastor. Spy. Assassin."), so allow a prefix match in the right year
+             || list.find(r => nameOf(r).startsWith(wanted + ' ') && seed.y && Math.abs((yearOf(r) || 0) - seed.y) <= 1)
+             // an exact full title is trusted even when TMDB's year disagrees
+             || (wanted.split(' ').length >= 3 ? list.find(r => nameOf(r) === wanted) : null);
     if (hit) return { type, id: hit.id };
   }
   return null;
@@ -208,18 +223,25 @@ async function main() {
   }
 
   const companies = ((await tmdb('/search/company', { query: COMPANY_QUERY }))?.results || [])
-    .filter(c => /angel studios/i.test(c.name));
+    .filter(c => ANGEL_COMPANIES.test(c.name.trim()));
+  const today = new Date().toISOString().slice(0, 10);
+  const seen = new Set([...out.values()].map(t => norm(t.t)));
   if (companies.length) {
     const ids = companies.map(c => c.id).join('|');
-    for (const type of ['movie', 'tv']) {
+    for (const type of ['tv', 'movie']) { // series first, so a series wins over a movie cut of the same title
       const found = await allPages(`/discover/${type}`, { with_companies: ids, include_adult: 'false', sort_by: type === 'tv' ? 'first_air_date.desc' : 'primary_release_date.desc' });
       for (const r of found) {
         const key = `${type}/${r.id}`;
         if (out.has(key)) continue;
         const d = await details(type, r.id);
         if (!d) continue;
+        const date = (type === 'tv' ? d.first_air_date : d.release_date) || '';
+        if (!date || date > today) continue; // skip announcements and titles that haven't come out yet
+        if (d.original_language && d.original_language !== 'en') continue; // another studio's film abroad, not Angel's lineup
         const m = mapTitle(d, type);
-        if (!m.y || m.y > new Date().getFullYear() + 1) continue; // skip undated announcements
+        const name = norm(m.t);
+        if (seen.has(name)) continue; // same title already listed (e.g. a film cut of a series, or a hand-curated title)
+        seen.add(name);
         out.set(key, { id: 'tmdb-' + type + '-' + r.id, ...m });
       }
     }

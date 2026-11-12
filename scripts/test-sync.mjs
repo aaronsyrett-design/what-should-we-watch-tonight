@@ -23,12 +23,26 @@ const MOVIES = {
   900: { id: 900, title: 'A Brand New Angel Film', release_date: '2026-10-01', runtime: 104, poster_path: '/new.jpg',
     genres: [{ id: 18 }], overview: 'A pastor rebuilds a small-town church after a storm.', keywords: kw('christian', 'hope', 'small town'),
     credits: { cast: [{ name: 'Someone Famous' }] }, release_dates: { results: [{ iso_3166_1: 'US', release_dates: [{ certification: 'PG' }] }] } },
-  901: { id: 901, title: 'Untitled Angel Project', release_date: '', genres: [], keywords: kw(), credits: { cast: [] }, release_dates: { results: [] } }
+  901: { id: 901, title: 'Untitled Angel Project', release_date: '', genres: [], keywords: kw(), credits: { cast: [] }, release_dates: { results: [] } },
+  // unrelated foreign film credited to a same-named studio
+  902: { id: 902, title: 'Bommai', original_language: 'ta', release_date: '2023-06-16', runtime: 150, genres: [{ id: 18 }], keywords: kw(), credits: { cast: [] }, release_dates: { results: [] } },
+  // Dry Bar style comedy special with no stand-up keyword and an odd "drama" genre
+  903: { id: 903, title: 'Kristin Key: Crafty', original_language: 'en', release_date: '2019-05-01', runtime: 62, genres: [{ id: 18 }], keywords: kw(), credits: { cast: [] }, release_dates: { results: [] } },
+  // dated but not out yet
+  904: { id: 904, title: 'Rode to Ruin', original_language: 'en', release_date: '2099-03-01', runtime: 100, genres: [{ id: 18 }], keywords: kw(), credits: { cast: [] }, release_dates: { results: [] } },
+  // film cut of a series that is also listed
+  905: { id: 905, title: 'Young David', original_language: 'en', release_date: '2024-04-01', runtime: 45, genres: [{ id: 16 }], keywords: kw('bible'), credits: { cast: [] }, release_dates: { results: [] } },
+  // looks like "Name: Title" but is a feature drama, not a comedy special
+  906: { id: 906, title: 'Zero A.D.: The Birth of Christ', original_language: 'en', release_date: '2026-03-01', runtime: 110, genres: [{ id: 18 }, { id: 53 }], keywords: kw('biblical'), credits: { cast: [] }, release_dates: { results: [] } },
+  // hand-curated "Bonhoeffer" is listed on TMDB with a subtitle
+  907: { id: 907, title: 'Bonhoeffer: Pastor. Spy. Assassin.', original_language: 'en', release_date: '2024-11-22', runtime: 132, genres: [{ id: 18 }, { id: 36 }], keywords: kw('nazi'), credits: { cast: [] }, release_dates: { results: [] } }
 };
 const SHOWS = {
   201: { id: 201, name: 'Tuttle Twins', first_air_date: '2021-09-01', episode_run_time: [22], poster_path: '/tuttle.jpg',
     genres: [{ id: 16 }, { id: 10762 }, { id: 35 }], overview: 'Twins learn big ideas.', keywords: { results: [{ name: 'economics' }] },
-    aggregate_credits: { cast: [] }, content_ratings: { results: [{ iso_3166_1: 'US', rating: 'TV-Y7' }] } }
+    aggregate_credits: { cast: [] }, content_ratings: { results: [{ iso_3166_1: 'US', rating: 'TV-Y7' }] } },
+  202: { id: 202, name: 'Young David', original_language: 'en', first_air_date: '2023-06-01', episode_run_time: [10], genres: [{ id: 16 }, { id: 10751 }],
+    overview: 'A shepherd boy and his songs.', keywords: { results: [{ name: 'bible' }] }, aggregate_credits: { cast: [] }, content_ratings: { results: [] } }
 };
 let requests = 0, sawAuth = true;
 const server = http.createServer((req, res) => {
@@ -38,11 +52,11 @@ const server = http.createServer((req, res) => {
   const send = (o, code = 200) => { res.writeHead(code, { 'content-type': 'application/json' }); res.end(JSON.stringify(o)); };
   const q = (u.searchParams.get('query') || '').toLowerCase();
   const p = u.pathname;
-  if (p === '/search/movie') return send({ results: Object.values(MOVIES).filter(m => m.title.toLowerCase() === q), total_pages: 1 });
+  if (p === '/search/movie') return send({ results: Object.values(MOVIES).filter(m => m.title.toLowerCase().startsWith(q)), total_pages: 1 });
   if (p === '/search/tv') return send({ results: Object.values(SHOWS).filter(m => m.name.toLowerCase() === q), total_pages: 1 });
-  if (p === '/search/company') return send({ results: [{ id: 7, name: 'Angel Studios' }, { id: 8, name: 'Angel Films Ltd' }] });
-  if (p === '/discover/movie') { assert.equal(u.searchParams.get('with_companies'), '7'); return send({ results: [{ id: 101 }, { id: 900 }, { id: 901 }], total_pages: 1 }); }
-  if (p === '/discover/tv') return send({ results: [{ id: 201 }], total_pages: 1 });
+  if (p === '/search/company') return send({ results: [{ id: 7, name: 'Angel Studios' }, { id: 8, name: 'Angel Films Ltd' }, { id: 9, name: 'VidAngel Studios' }, { id: 10, name: 'Fallen Angel Studios' }] });
+  if (p === '/discover/movie') { assert.equal(u.searchParams.get('with_companies'), '7|9'); return send({ results: [101, 900, 901, 902, 903, 904, 905, 906, 907].map(id => ({ id })), total_pages: 1 }); }
+  if (p === '/discover/tv') return send({ results: [{ id: 201 }, { id: 202 }], total_pages: 1 });
   let m = p.match(/^\/movie\/(\d+)$/); if (m && MOVIES[m[1]]) return send(MOVIES[m[1]]);
   m = p.match(/^\/tv\/(\d+)$/); if (m && SHOWS[m[1]]) return send(SHOWS[m[1]]);
   send({ status_message: 'not found' }, 404);
@@ -79,7 +93,18 @@ assert.ok(by['tmdb-movie-900'].g.includes('faith'));
 assert.ok(!by['tmdb-movie-901'], 'undated titles are skipped');
 assert.ok(!doc.titles.some(t => t.tmdb === 'tv/201' && t.id !== 'tuttle'), 'discovered series that matches a seed keeps the seed id');
 // only real Angel Studios companies, attribution present, unmatched listed
-assert.deepEqual(doc.companies, [{ id: 7, name: 'Angel Studios' }]);
+assert.deepEqual(doc.companies, [{ id: 7, name: 'Angel Studios' }, { id: 9, name: 'VidAngel Studios' }]);
+// cleanup rules from the first live run
+assert.ok(!by['tmdb-movie-902'], 'non-English film from an unrelated studio is skipped');
+assert.ok(!by['tmdb-movie-904'], 'unreleased titles are skipped');
+assert.equal(by['tmdb-movie-903'].k, 'Special', 'comedian special is recognized by its title');
+assert.equal(by['tmdb-movie-903'].tags[0], 'funny');
+assert.equal(by['tmdb-movie-903'].len, 'short');
+assert.equal(by['tmdb-movie-906'].k, 'Movie', 'a "Name: Title" drama is not mistaken for a special');
+assert.equal(doc.titles.filter(t => t.t === 'Young David').length, 1, 'same title listed once');
+assert.ok(by['tmdb-tv-202'], 'the series wins over its film cut');
+assert.equal(by.bonhoeffer.tmdb, 'movie/907', 'hand-curated title matches TMDB title with a subtitle');
+assert.ok(!by['tmdb-movie-907'], 'no duplicate for the subtitled seed');
 assert.match(doc.notice, /not endorsed or certified by TMDB/);
 assert.ok(doc.unmatched.includes('Cabrini'));
 // second run is a no-op
