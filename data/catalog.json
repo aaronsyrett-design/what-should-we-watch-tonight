@@ -24,7 +24,6 @@
     }
   ],
   "unmatched": [
-    "Bonhoeffer",
     "Mary 4 Mayor",
     "Phil Wickham: Song of the Saints Tour Live",
     "Keith Pedro: Petty Murphy",
@@ -160,6 +159,54 @@
         "disrespectful"
       ],
       "poster": "https://image.tmdb.org/t/p/w500/6pzI1DIlxwAFffw9OZcG6cr031U.jpg"
+    },
+    {
+      "id": "bonhoeffer",
+      "tmdb": "movie/1079244",
+      "t": "Bonhoeffer: Pastor. Spy. Assassin",
+      "y": 2024,
+      "k": "Movie",
+      "age": "teen",
+      "cert": "PG-13",
+      "g": [
+        "drama",
+        "thriller",
+        "true",
+        "faith"
+      ],
+      "tags": [
+        "thrill",
+        "inspire",
+        "cry",
+        "faith"
+      ],
+      "i": 4,
+      "len": "movie",
+      "cast": [
+        "Jonas Dassler",
+        "Phileas Heyblom",
+        "August Diehl",
+        "David Jonsson"
+      ],
+      "b": "As the world teeters on the brink of annihilation, Dietrich Bonhoeffer joins a deadly plot to assassinate Hitler, risking his faith and fate to save millions of Jews from genocide.",
+      "keywords": [
+        "assassin",
+        "based on true story",
+        "moral courage",
+        "tyranny",
+        "historical drama",
+        "1940s",
+        "christian film",
+        "nazi germany",
+        "independent film",
+        "theologian",
+        "pastor spy",
+        "public opposition",
+        "pacifism conflict",
+        "wartime oppression",
+        "resistance network"
+      ],
+      "poster": "https://image.tmdb.org/t/p/w500/9WtImcI6k9XOcnPmSeN2Kzpf4ay.jpg"
     },
     {
       "id": "cabrini",
@@ -632,14 +679,15 @@
       "tmdb": "movie/1693788",
       "t": "Rob Schneider: I Really Love You",
       "y": 2025,
-      "k": "Movie",
+      "k": "Special",
       "age": "teen",
       "cert": null,
       "g": [
         "comedy"
       ],
       "tags": [
-        "funny"
+        "funny",
+        "cozy"
       ],
       "i": 1,
       "len": "short",
@@ -720,14 +768,15 @@
       "tmdb": "movie/1616394",
       "t": "Shayne Smith: Kangaroo Killer",
       "y": 2025,
-      "k": "Movie",
+      "k": "Special",
       "age": "teen",
       "cert": null,
       "g": [
         "comedy"
       ],
       "tags": [
-        "funny"
+        "funny",
+        "cozy"
       ],
       "i": 1,
       "len": "short",
@@ -1434,17 +1483,18 @@
       "tmdb": "movie/718320",
       "t": "Aaron Woodall: Sad and Needy",
       "y": 2020,
-      "k": "Movie",
+      "k": "Special",
       "age": "teen",
       "cert": null,
       "g": [
         "comedy"
       ],
       "tags": [
-        "funny"
+        "funny",
+        "cozy"
       ],
       "i": 1,
-      "len": "movie",
+      "len": "short",
       "cast": [
         "Aaron Woodall"
       ],
@@ -1531,47 +1581,19 @@
       "poster": "https://image.tmdb.org/t/p/w500/8yev03KfsrC6EfHt7Qgxv1RSr1W.jpg"
     },
     {
-      "id": "tmdb-movie-660659",
-      "tmdb": "movie/660659",
-      "t": "Bommai",
-      "y": 2023,
-      "k": "Movie",
-      "age": "teen",
-      "cert": null,
-      "g": [
-        "drama",
-        "thriller"
-      ],
-      "tags": [
-        "thrill",
-        "heart",
-        "epic"
-      ],
-      "i": 3,
-      "len": "epic",
-      "cast": [
-        "S. J. Suryah",
-        "Priya Bhavani Shankar",
-        "Chandhini Tamilarasan",
-        "Joshua Parisutham"
-      ],
-      "b": "Raj Kumar, a painter in a mannequin factory with troubled past, falls in love with a mannequin reminds him of his high-school sweetheart Nandini and imagines it to be real. But things get messy…",
-      "keywords": [],
-      "poster": "https://image.tmdb.org/t/p/w500/edrf1p9Twd9LyelkjzGyUDJHBMH.jpg"
-    },
-    {
       "id": "tmdb-movie-516151",
       "tmdb": "movie/516151",
       "t": "Brad Upton: Will Be Funny For Money",
       "y": 2017,
-      "k": "Movie",
+      "k": "Special",
       "age": "teen",
       "cert": "NR",
       "g": [
         "comedy"
       ],
       "tags": [
-        "funny"
+        "funny",
+        "cozy"
       ],
       "i": 1,
       "len": "short",
@@ -1613,14 +1635,15 @@
       "tmdb": "movie/697774",
       "t": "Brian Bates: Uber Important",
       "y": 2020,
-      "k": "Movie",
+      "k": "Special",
       "age": "teen",
       "cert": null,
       "g": [
         "comedy"
       ],
       "tags": [
-        "funny"
+        "funny",
+        "cozy"
       ],
       "i": 1,
       "len": "short",
@@ -1671,14 +1694,15 @@
       "tmdb": "movie/1693791",
       "t": "Danny Dunn: Scalps Out!",
       "y": 2026,
-      "k": "Movie",
+      "k": "Special",
       "age": "teen",
       "cert": null,
       "g": [
         "comedy"
       ],
       "tags": [
-        "funny"
+        "funny",
+        "cozy"
       ],
       "i": 1,
       "len": "short",
@@ -1694,14 +1718,15 @@
       "tmdb": "movie/502435",
       "t": "Dennis Regan: Dennisland",
       "y": 2018,
-      "k": "Movie",
+      "k": "Special",
       "age": "teen",
       "cert": null,
       "g": [
         "comedy"
       ],
       "tags": [
-        "funny"
+        "funny",
+        "cozy"
       ],
       "i": 1,
       "len": "short",
@@ -1748,17 +1773,18 @@
       "tmdb": "movie/561918",
       "t": "Fred Klett: One of Ten",
       "y": 2018,
-      "k": "Movie",
+      "k": "Special",
       "age": "teen",
       "cert": null,
       "g": [
         "comedy"
       ],
       "tags": [
-        "funny"
+        "funny",
+        "cozy"
       ],
       "i": 1,
-      "len": "movie",
+      "len": "short",
       "cast": [
         "Fred Klett"
       ],
@@ -1797,14 +1823,15 @@
       "tmdb": "movie/533431",
       "t": "Greg Morton: I Started Out, as a Baby",
       "y": 2018,
-      "k": "Movie",
+      "k": "Special",
       "age": "teen",
       "cert": null,
       "g": [
         "comedy"
       ],
       "tags": [
-        "funny"
+        "funny",
+        "cozy"
       ],
       "i": 1,
       "len": "short",
@@ -1814,42 +1841,6 @@
       "b": "Greg Morton had only two choices in schoolyard conflicts. Learn the ways of the force, or use his wit to diffuse situations. That wit would soon lead to winning first prize in the, ‘So You Think…",
       "keywords": [],
       "poster": "https://image.tmdb.org/t/p/w500/9Bardx7hBE9ACYdWJMkBCdRUU1C.jpg"
-    },
-    {
-      "id": "tmdb-movie-1461490",
-      "tmdb": "movie/1461490",
-      "t": "Hershey",
-      "y": 2026,
-      "k": "Movie",
-      "age": "kids",
-      "cert": "PG",
-      "g": [
-        "drama",
-        "true"
-      ],
-      "tags": [
-        "inspire",
-        "learn",
-        "heart",
-        "epic"
-      ],
-      "i": 2,
-      "len": "movie",
-      "cast": [
-        "Finn Wittrock",
-        "Alexandra Daddario",
-        "Alan Ruck",
-        "Richard Kind"
-      ],
-      "b": "Based on the life of Milton Hershey, founder of the iconic Hershey chocolate company. Milton's grit and determination to conquer the world of candy-making propel him from bankruptcy to monumental…",
-      "keywords": [
-        "chocolate",
-        "family business ",
-        "based on true story",
-        "biographical drama",
-        "chocolatier"
-      ],
-      "poster": "https://image.tmdb.org/t/p/w500/ojd8Gu2bPsOzdMz6Ip5AYDu4Vki.jpg"
     },
     {
       "id": "tmdb-tv-256106",
@@ -1891,36 +1882,6 @@
       "poster": "https://image.tmdb.org/t/p/w500/Ani2DqDFLqKC4zPqvsPdfft13Fk.jpg"
     },
     {
-      "id": "tmdb-movie-1193128",
-      "tmdb": "movie/1193128",
-      "t": "I Was a Stranger",
-      "y": 2025,
-      "k": "Movie",
-      "age": "teen",
-      "cert": "PG-13",
-      "g": [
-        "drama",
-        "thriller"
-      ],
-      "tags": [
-        "thrill",
-        "heart"
-      ],
-      "i": 3,
-      "len": "movie",
-      "cast": [
-        "Yasmine Al Massri",
-        "Yahya Mahayni",
-        "Omar Sy",
-        "Ziad Bakri"
-      ],
-      "b": "A Syrian doctor and her daughter flee Aleppo, setting off a chain of events that binds five strangers together. A smuggler, a soldier, a poet, and a coast guard captain collide in a crisis that…",
-      "keywords": [
-        "refugee"
-      ],
-      "poster": "https://image.tmdb.org/t/p/w500/RBIrEveMOIy5Kxg2WzgMnCIhaN.jpg"
-    },
-    {
       "id": "tmdb-movie-1684443",
       "tmdb": "movie/1684443",
       "t": "In the Shadow of the King",
@@ -1951,14 +1912,15 @@
       "tmdb": "movie/1694076",
       "t": "John Hastings: Everything Goes Wrong",
       "y": 2025,
-      "k": "Movie",
+      "k": "Special",
       "age": "teen",
       "cert": null,
       "g": [
         "comedy"
       ],
       "tags": [
-        "funny"
+        "funny",
+        "cozy"
       ],
       "i": 1,
       "len": "short",
@@ -1974,14 +1936,15 @@
       "tmdb": "movie/723190",
       "t": "Jose Sarduy: Cuban Pilot",
       "y": 2021,
-      "k": "Movie",
+      "k": "Special",
       "age": "teen",
       "cert": "NR",
       "g": [
         "comedy"
       ],
       "tags": [
-        "funny"
+        "funny",
+        "cozy"
       ],
       "i": 1,
       "len": "short",
@@ -1997,14 +1960,15 @@
       "tmdb": "movie/1694081",
       "t": "Josh Blue: Get In The Pile",
       "y": 2021,
-      "k": "Movie",
+      "k": "Special",
       "age": "teen",
       "cert": null,
       "g": [
         "comedy"
       ],
       "tags": [
-        "funny"
+        "funny",
+        "cozy"
       ],
       "i": 1,
       "len": "short",
@@ -2054,14 +2018,15 @@
       "tmdb": "movie/463531",
       "t": "Kellen Erskine: Composed",
       "y": 2017,
-      "k": "Movie",
+      "k": "Special",
       "age": "teen",
       "cert": null,
       "g": [
         "comedy"
       ],
       "tags": [
-        "funny"
+        "funny",
+        "cozy"
       ],
       "i": 1,
       "len": "short",
@@ -2077,14 +2042,15 @@
       "tmdb": "movie/1694086",
       "t": "Kenn Kington: Enjoying Chaos",
       "y": 2025,
-      "k": "Movie",
+      "k": "Special",
       "age": "teen",
       "cert": null,
       "g": [
         "comedy"
       ],
       "tags": [
-        "funny"
+        "funny",
+        "cozy"
       ],
       "i": 1,
       "len": "short",
@@ -2202,14 +2168,15 @@
       "tmdb": "movie/1693662",
       "t": "Mark Viera: Truth Be Told",
       "y": 2026,
-      "k": "Movie",
+      "k": "Special",
       "age": "teen",
       "cert": null,
       "g": [
         "comedy"
       ],
       "tags": [
-        "funny"
+        "funny",
+        "cozy"
       ],
       "i": 1,
       "len": "short",
@@ -2225,17 +2192,18 @@
       "tmdb": "movie/771517",
       "t": "Mike Goodwin: Whatchanotgonedo is Just Laugh at These Jokes!",
       "y": 2020,
-      "k": "Movie",
+      "k": "Special",
       "age": "teen",
       "cert": null,
       "g": [
         "comedy"
       ],
       "tags": [
-        "funny"
+        "funny",
+        "cozy"
       ],
       "i": 1,
-      "len": "movie",
+      "len": "short",
       "cast": [
         "Mike Goodwin"
       ],
@@ -2291,14 +2259,15 @@
       "tmdb": "movie/1693780",
       "t": "Patrick Warburton: Still Catholic",
       "y": 2025,
-      "k": "Movie",
+      "k": "Special",
       "age": "teen",
       "cert": null,
       "g": [
         "comedy"
       ],
       "tags": [
-        "funny"
+        "funny",
+        "cozy"
       ],
       "i": 1,
       "len": "short",
@@ -2362,32 +2331,6 @@
       "poster": "https://image.tmdb.org/t/p/w500/8a3OTtBUzQgJlJkcP5zIQx7R3ph.jpg"
     },
     {
-      "id": "tmdb-movie-1760170",
-      "tmdb": "movie/1760170",
-      "t": "Rode to Ruin",
-      "y": 2027,
-      "k": "Movie",
-      "age": "teen",
-      "cert": null,
-      "g": [
-        "drama"
-      ],
-      "tags": [
-        "adventure"
-      ],
-      "i": 2,
-      "len": "movie",
-      "cast": [
-        "Michael Keaton",
-        "Morgan Freeman",
-        "Laura Linney",
-        "Richard Gadd"
-      ],
-      "b": "Keaton will portray retired Marshal Henry Tillman, and Freeman is a wanted outlaw named Joseph Mulberry. The U.S. Marshal searched forty years for his wife’s killer, and the cold trail finally…",
-      "keywords": [],
-      "poster": null
-    },
-    {
       "id": "tmdb-movie-1616392",
       "tmdb": "movie/1616392",
       "t": "Shayne Smith: Banned From Karate",
@@ -2444,14 +2387,15 @@
       "tmdb": "movie/777417",
       "t": "Steve Hofstetter: a trip to japan",
       "y": 2021,
-      "k": "Movie",
+      "k": "Special",
       "age": "teen",
       "cert": null,
       "g": [
         "comedy"
       ],
       "tags": [
-        "funny"
+        "funny",
+        "cozy"
       ],
       "i": 1,
       "len": "short",
@@ -2467,14 +2411,15 @@
       "tmdb": "movie/477385",
       "t": "Steve Mazan: Humblebragger",
       "y": 2017,
-      "k": "Movie",
+      "k": "Special",
       "age": "teen",
       "cert": "NR",
       "g": [
         "comedy"
       ],
       "tags": [
-        "funny"
+        "funny",
+        "cozy"
       ],
       "i": 1,
       "len": "short",
@@ -2679,14 +2624,15 @@
       "tmdb": "movie/504844",
       "t": "Tyler Boeh: Wait For It",
       "y": 2018,
-      "k": "Movie",
+      "k": "Special",
       "age": "teen",
       "cert": null,
       "g": [
         "comedy"
       ],
       "tags": [
-        "funny"
+        "funny",
+        "cozy"
       ],
       "i": 1,
       "len": "short",
@@ -2785,45 +2731,6 @@
       "poster": "https://image.tmdb.org/t/p/w500/gnqJ4OmGTjTPRfTZQRbB50ZNttl.jpg"
     },
     {
-      "id": "tmdb-movie-1314438",
-      "tmdb": "movie/1314438",
-      "t": "Young David",
-      "y": 2024,
-      "k": "Animated",
-      "age": "teen",
-      "cert": "NR",
-      "g": [
-        "family",
-        "faith"
-      ],
-      "tags": [
-        "family",
-        "faith",
-        "heart"
-      ],
-      "i": 1,
-      "len": "short",
-      "cast": [
-        "Brandon Engman",
-        "Matthew Gair",
-        "Sloan Lucas Muldown",
-        "David Rosenberg"
-      ],
-      "b": "In the quiet hills of Bethlehem, a shepherd boy named David finds meaning in every melody and strength in every trial. Follow the early adventures of Israel’s future king as he learns courage in…",
-      "keywords": [
-        "shepherd",
-        "bible",
-        "musical",
-        "miniseries",
-        "david vs. goliath",
-        "origin story",
-        "shepherd boy",
-        "biblical",
-        "israeli history"
-      ],
-      "poster": "https://image.tmdb.org/t/p/w500/dYaySKBEiuzXPLRjQWcCOExOhAz.jpg"
-    },
-    {
       "id": "tmdb-tv-239496",
       "tmdb": "tv/239496",
       "t": "Young David",
@@ -2862,52 +2769,19 @@
       "poster": "https://image.tmdb.org/t/p/w500/bOoztsvrpmIBqLFYK9G5YSGpWxQ.jpg"
     },
     {
-      "id": "tmdb-movie-1408207",
-      "tmdb": "movie/1408207",
-      "t": "Zero A.D.: The Birth of Christ",
-      "y": 2026,
-      "k": "Movie",
-      "age": "teen",
-      "cert": "PG-13",
-      "g": [
-        "drama",
-        "thriller",
-        "faith"
-      ],
-      "tags": [
-        "thrill",
-        "faith",
-        "heart"
-      ],
-      "i": 3,
-      "len": "movie",
-      "cast": [
-        "Deva Cassel",
-        "Jamie Ward",
-        "Jim Caviezel",
-        "Sam Worthington"
-      ],
-      "b": "A star rises over Bethlehem as Christ is born. But when Herod orders the slaughter of the innocents, Mary and Joseph must protect the child promised to save the world.",
-      "keywords": [
-        "bethlehem",
-        "virgin mary",
-        "biblical"
-      ],
-      "poster": "https://image.tmdb.org/t/p/w500/dUeEofJFpp04OjRr2hatZGCFrlR.jpg"
-    },
-    {
       "id": "tmdb-movie-513042",
       "tmdb": "movie/513042",
       "t": "Zoltan Kaszas: Cat Jokes",
       "y": 2017,
-      "k": "Movie",
+      "k": "Special",
       "age": "teen",
       "cert": null,
       "g": [
         "comedy"
       ],
       "tags": [
-        "funny"
+        "funny",
+        "cozy"
       ],
       "i": 1,
       "len": "short",
