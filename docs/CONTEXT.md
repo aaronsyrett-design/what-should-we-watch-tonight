@@ -31,6 +31,13 @@ Catalog entries: `{id, age, guild?, t, k, y, g[genres], tags[primary-first], i (
 
 Score = genre match (2.5 each, max 2) + want tag (4 × weight; primary tag weight 1, others 0.6) + vibe tags (1.2×) + intensity fit (each vibe has a comfortable range; −1.8 per step outside, +1 inside; extra −2 for heavy titles when wanting a laugh) + length fit + actor (+3 if in cast, + 0.8 × actor's tags) + snack/drink/playlist tags (0.6×). `matchPct = score / max possible`.
 
+### Room fit (group picks)
+Each person's fit for a title is where it lands in their own ranking of the lineup (1 = their top pick, 0 = their last), so nobody counts more for answering more questions. Room score = 0.55 × average fit + 0.45 × lowest fit − 0.06 per person for whom the title is a dealbreaker (bottom fifth of their list). This "least misery" blend favors titles that work for everyone over ones half the room loves and half dreads.
+
+Room fit drives the bracket seeding (nominations × 4 + 12 × room score − 3 per dealbreaker + write-in bonus), the wildcards, tiebreaks, the "best bet for everyone" line in the room read, the swipe deck order once others have answered (65% personal, 35% room), the "Room favorite" / "Works for everyone" / "Risky" labels, the room fit % on bracket cards, and the "Why it works for this room" panel on the winner screen. Explanations count people and never name them, so ballots stay secret.
+
+In 200 simulated 5-person rooms with random answers, the top room pick keeps the same average happiness as the old sum-of-scores pick (0.80) while lifting the least-happy person from 0.47 to 0.59, and the share of nights where someone gets a bottom-fifth movie drops from about 1 in 10 to 0.
+
 ## Standings and badges
 Points: +3 per matchup your nominee wins, +5 if it wins the night, +1 per correct call.
 

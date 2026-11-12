@@ -131,6 +131,12 @@ input.code{font:700 30px/1 var(--mono);letter-spacing:.35em;text-transform:upper
 .deck-info .blurb{color:var(--muted);font-size:15px;margin:0}
 .deck-info .match{font:700 13px/1 var(--mono);color:var(--gold)}
 .deck-info .why{font-size:13px;color:var(--mint);font-weight:600}
+.roomtag{font-size:13px;font-weight:600;color:var(--mint)}
+.roomtag.risky{color:var(--coral)}
+.roomtag b{color:var(--gold)}
+.pick .rfit{font:500 12px/1 var(--mono);color:var(--muted)}
+.roomwhy{display:flex;flex-direction:column;gap:6px;text-align:left;padding:14px;border-radius:14px;background:var(--panel2);width:100%;box-sizing:border-box}
+.roomwhy p{font-size:15px}
 .swipe-btns{display:flex;align-items:center;justify-content:center;gap:28px}
 .swbtn{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;background:var(--panel2);border:2px solid var(--line);transition:transform .12s}
 .swbtn:active{transform:scale(.92)}
@@ -562,8 +568,62 @@ function scoreParts(item, a){
 }
 function maxScore(a){ return ((a.genres||[]).length?5:0) + 4 + 1.2*2.2 + 1 + 2 + (ACTORS[a.actor]?3+.8*2.2:0) + (SNACKS[a.snack]?.6*1.8:0) + (PLAYLISTS[a.playlist]?.6*1.8:0) + (DRINKS[a.drink]?.6*1.8:0); }
 const matchPct = (item,a) => Math.max(5,Math.min(99,Math.round(100*score(item,a)/maxScore(a))));
-const groupScore = id => BY_ID[id] ? S.players.reduce((s,p)=>s+score(BY_ID[id],p.answers),0) : 0;
 function suggestionsFor(a){ return CATALOG.filter(fits).map(c=>({c,s:score(c,a)})).sort((x,y)=>y.s-x.s).map(x=>x.c); }
+
+/* ---------- room fit: picks that work for the whole room ----------
+   Each person's fit is where a title lands in their own ranking of the lineup (1 = their top pick,
+   0 = their last), so nobody counts more just because they answered more questions or feel strongly.
+   The room score blends the average with the lowest fit ("least misery"): a title everyone likes
+   beats one that half the room loves and the other half dreads. */
+const DEALBREAK = .2;   /* bottom fifth of someone's list: they'd probably rather do the dishes */
+const HAPPY = .6;
+const tagWeight = (item,t) => { const i=item.tags?item.tags.indexOf(t):-1; return i<0?0:(i===0?1:.6); };
+const rankCache = new Map();
+function fitOf(item, a){
+  if(!a||!item||!item.tags) return 0;
+  const key=JSON.stringify(a);
+  let sorted=rankCache.get(key);
+  if(!sorted){ sorted=CATALOG.map(c=>score(c,a)).sort((x,y)=>x-y); if(rankCache.size>200) rankCache.clear(); rankCache.set(key,sorted); }
+  const s=score(item,a); let below=0; while(below<sorted.length&&sorted[below]<s) below++;
+  return below/Math.max(1,sorted.length-1);
+}
+function roomFit(item, players=S.players){
+  const fs=players.filter(p=>p.answers).map(p=>fitOf(item,p.answers));
+  if(!item||!item.tags||!fs.length) return null;
+  const avg=fs.reduce((s,f)=>s+f,0)/fs.length, min=Math.min(...fs);
+  const happy=fs.filter(f=>f>=HAPPY).length, miserable=fs.filter(f=>f<DEALBREAK).length;
+  const score=Math.max(0, .55*avg + .45*min - .06*miserable);
+  return {score, avg, min, happy, miserable, n:fs.length};
+}
+const roomPct = r => Math.max(5,Math.min(99,Math.round(100*r.score/.8)));   /* .8 is about as good as a real room gets */
+const groupScore = id => { const r=BY_ID[id]&&roomFit(BY_ID[id]); return r ? r.score : 0; };
+/* The room's ranking of every title that fits the audience, best first. */
+function roomRanking(){ return CATALOG.filter(fits).map(c=>({c,r:roomFit(c)})).filter(x=>x.r).sort((a,b)=>b.r.score-a.r.score); }
+function roomLabel(r){
+  if(!r||r.n<2) return '';
+  if(!r.miserable && r.min>=.4) return 'Works for everyone';
+  if(!r.miserable) return r.happy>=Math.ceil(r.n/2) ? 'Good for most of the room' : 'Nobody’s against it';
+  return r.miserable===1 ? 'Risky: 1 of you would rather skip it' : `Risky: ${r.miserable} of you would rather skip it`;
+}
+/* Plain-language reason a title suits this room. Counts people, never names them, so ballots stay secret. */
+function roomWhy(item, players=S.players){
+  const ps=players.filter(p=>p.answers); if(!item||!item.tags||!ps.length) return '';
+  const n=ps.length, r=roomFit(item,ps), bits=[];
+  const wants={}; ps.forEach(p=>{ if(tagWeight(item,p.answers.want)>0) wants[p.answers.want]=(wants[p.answers.want]||0)+1; });
+  const hit=Object.values(wants).reduce((s,x)=>s+x,0);
+  const words=Object.keys(wants).sort((a,b)=>wants[b]-wants[a]).map(w=>WANT_WORD[w]);
+  if(hit) bits.push(`${hit===n?(n===2?'Both of you':`All ${n} of you`):hit+' of '+n} get what you asked for (${words.slice(0,2).join(' and ')})`);
+  const vibe={}; ps.forEach(p=>{ const v=p.answers.vibe, rg=VIBE_RANGE[v]; if(rg&&item.i>=rg[0]&&item.i<=rg[1]) vibe[v]=(vibe[v]||0)+1; });
+  const topV=Object.entries(vibe).sort((a,b)=>b[1]-a[1])[0];
+  if(topV&&topV[1]>=2) bits.push(`the right weight for the ${topV[1]} of you who are ${VIBE_WORD[topV[0]]}`);
+  else if(topV&&n<=2) bits.push(`the right weight for how you feel`);
+  const fans=ps.filter(p=>ACTORS[p.answers.actor]&&item.cast.includes(ACTORS[p.answers.actor].n)).map(p=>ACTORS[p.answers.actor].n);
+  if(fans.length) bits.push(`stars ${[...new Set(fans)][0]}, a hangout pick`);
+  let line = bits.length ? bits.slice(0,2).join(', and ')+'.' : 'A compromise pick: nobody’s first choice, but it splits the difference.';
+  line = line.charAt(0).toUpperCase()+line.slice(1);
+  if(r&&n>1){ line += r.miserable ? ` Heads up: ${r.miserable===1?'one of you is':r.miserable+' of you are'} hoping for something different.` : r.min>=.4 ? ' Nobody gets stuck with it.' : ''; }
+  return line;
+}
 function whyLine(item,a){
   const p=scoreParts(item,a), bits=[], act=ACTORS[a.actor];
   if(item.unverified) return 'New on Angel. We\u2019ll know more about this one soon.';
@@ -580,7 +640,8 @@ function roomRead(){
   const ps=S.players.filter(p=>p.answers); if(!ps.length) return '';
   const top=(k)=>{const c={}; ps.forEach(p=>c[p.answers[k]]=(c[p.answers[k]]||0)+1); return Object.entries(c).sort((a,b)=>b[1]-a[1])[0];};
   const [w,wn]=top('want'), [v,vn]=top('vibe');
-  return `Room read: ${wn} of ${ps.length} want to ${WANT_WORD[w]}. ${vn>1?vn+' of you are':'One of you is'} ${VIBE_WORD[v]}.`;
+  const best=ps.length>1?roomRanking()[0]:null;
+  return `Room read: ${wn} of ${ps.length} want to ${WANT_WORD[w]}. ${vn>1?vn+' of you are':'One of you is'} ${VIBE_WORD[v]}.${best?` Best bet for everyone so far: ${best.c.t}.`:''}`;
 }
 
 /* ---------- poster ---------- */
@@ -676,7 +737,7 @@ function buildBracket(){
     (p.noms||[]).forEach(id=>{ const c=BY_ID[id]; if(!c||!fits(c)) return; entries[id]=entries[id]||{id,t:c.t,y:c.y,k:c.k,age:c.age,by:[]}; entries[id].by.push(p.name); });
     (p.customs||[]).forEach(c=>{ entries[c.id]=entries[c.id]||{id:c.id,t:c.t,custom:true,by:[]}; if(!entries[c.id].by.includes(p.name)) entries[c.id].by.push(p.name); });
   });
-  const rank=id=>entries[id].by.length*4+groupScore(id)+(entries[id].custom?3:0);
+  const rank=id=>{ const r=BY_ID[id]&&roomFit(BY_ID[id]); return entries[id].by.length*4 + (r?12*r.score-3*r.miserable:0) + (entries[id].custom?3:0); };
   let ids=Object.keys(entries).sort((a,b)=>rank(b)-rank(a));
   const size = ids.length<=4 ? 4 : 8;
   ids=ids.slice(0,size);
@@ -693,7 +754,7 @@ async function resolveMatch(){
   const g=S.game, key=curKey(), pair=matchup(), t=tally(key,pair);
   let w = t[pair[0]]>t[pair[1]] ? pair[0] : t[pair[1]]>t[pair[0]] ? pair[1] : null;
   let tie=false;
-  if(!w){ tie=true; const a=groupScore(pair[0])+(g.entries[pair[0]].by.length), b=groupScore(pair[1])+(g.entries[pair[1]].by.length); w = a===b ? pair[Math.random()<.5?0:1] : (a>b?pair[0]:pair[1]); }
+  if(!w){ tie=true; const a=10*groupScore(pair[0])+.1*g.entries[pair[0]].by.length, b=10*groupScore(pair[1])+.1*g.entries[pair[1]].by.length; w = a===b ? pair[Math.random()<.5?0:1] : (a>b?pair[0]:pair[1]); }
   await hostWrite({pending:true, lastResult:{key, winner:w, tally:t, tie}});
   setTimeout(()=>advance(w), 2200);
 }
@@ -921,7 +982,11 @@ function vWaiting(flag, title){
 function vNominate(){
   const p=meP(); if(!p||!p.answers) return vWaiting('mood','Hang tight');
   const {noms,customs}=myNoms(), count=noms.length+customs.length;
-  const deck=suggestionsFor(p.answers).filter(c=>!noms.includes(c.id));
+  const others=S.players.filter(x=>x.answers).length>1;
+  const deck=(others
+    ? CATALOG.filter(fits).map(c=>({c,s:.65*fitOf(c,p.answers)+.35*(roomFit(c)?.score||0)})).sort((a,b)=>b.s-a.s).map(x=>x.c)
+    : suggestionsFor(p.answers)).filter(c=>!noms.includes(c.id));
+  const favs=others?new Set(roomRanking().slice(0,3).map(x=>x.c.id)):new Set();
   const cur=deck[S.ui.deck % Math.max(deck.length,1)];
   const full = count>=MAX_NOMS;
   const read=roomRead();
@@ -937,7 +1002,8 @@ function vNominate(){
     </div>
   </div>
   <div class="deck-info stack">
-    <p class="match">${matchPct(cur,p.answers)}% match for you</p>
+    <p class="match">${matchPct(cur,p.answers)}% match for you${others?` · ${roomPct(roomFit(cur))}% room fit`:''}</p>
+    ${others?`<p class="roomtag${roomFit(cur).miserable?' risky':''}">${favs.has(cur.id)?'<b>Room favorite</b> · ':''}${esc(roomLabel(roomFit(cur)))}</p>`:''}
     ${castRow(cur)}
     <p class="blurb">${esc(cur.b)}</p>
     <p class="why">${esc(whyLine(cur,p.answers))}</p>
@@ -979,10 +1045,10 @@ function vBracket(){
   const voted=S.players.filter(p=>p.votes&&p.votes[key]).length;
   const total=Math.log2(g.rounds[0].length), roundName= total-g.cur.r===1?'The final':total-g.cur.r===2?'Semifinal':'Quarterfinal';
   const card=id=>{ const cls=res?(res.winner===id?' won':' lost'):'';
-    return `<button class="pick${cls}" data-act="vote" data-id="${id}" aria-pressed="${mine===id}" ${res?'disabled':''}>${poster(g.entries[id])}<span class="votes">${res?`${res.tally[id]} vote${res.tally[id]===1?'':'s'}`:(mine===id?'Your vote':'')}</span></button>`; };
+    return `<button class="pick${cls}" data-act="vote" data-id="${id}" aria-pressed="${mine===id}" ${res?'disabled':''}>${poster(g.entries[id])}<span class="votes">${res?`${res.tally[id]} vote${res.tally[id]===1?'':'s'}`:(mine===id?'Your vote':'')}</span>${BY_ID[id]&&S.players.length>1?`<span class="rfit">${roomPct(roomFit(BY_ID[id]))}% room fit</span>`:''}</button>`; };
   return `${header()}
   <span class="eyebrow">${roundName} · Match ${g.cur.m+1}</span>
-  <h2>${res?esc(g.entries[res.winner].t)+' moves on'+(res.tie?' (tiebreak by mood)':''):'Tap the one you’d rather watch'}</h2>
+  <h2>${res?esc(g.entries[res.winner].t)+' moves on'+(res.tie?' (tie goes to the better room fit)':''):'Tap the one you’d rather watch'}</h2>
   <div class="vs">${card(pair[0])}<span class="mid">VS</span>${card(pair[1])}</div>
   <div class="status"><span>${voted} of ${S.players.length} voted${mine&&!res?' · you can switch until everyone’s in':''}</span>
   ${isHost()&&!res&&voted<S.players.length?'<button class="btn small ghost" data-act="force">Call it now</button>':''}</div>
@@ -1258,6 +1324,7 @@ function vWinner(){
     ${poster(w)}
     <h2>${esc(w.t)}</h2>
     ${info?`<p class="lede">${esc(info.b)}</p>`:''}
+    ${info&&S.players.length>1?`<div class="roomwhy"><span class="eyebrow">Why it works for this room · ${roomPct(roomFit(info))}% fit</span><p>${esc(roomWhy(info))}</p></div>`:''}
     ${info?`<a class="btn" href="https://www.angel.com/watch" target="_blank" rel="noopener">Find it on Angel</a>`:`<p class="fine">A pick from the room. Pull it up wherever you watch.</p>`}
   </div>
   ${vScores()}
