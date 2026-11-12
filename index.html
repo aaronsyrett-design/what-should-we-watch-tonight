@@ -305,9 +305,40 @@ const AUDIENCE = {
   little:{n:'Little kids too',s:'Under 8 in the room',ok:['all'],label:'all ages'},
   kids:{n:'Kids 8 and up',s:'Family-safe',ok:['all','kids'],label:'ages 8 and up'},
   teens:{n:'Teens and up',s:'13+',ok:['all','kids','teen'],label:'ages 13 and up'},
-  adults:{n:'Grown-ups only',s:'Anything goes',ok:['all','kids','teen'],label:'grown-ups'}
+  adults:{n:'Grown-ups only',s:'Anything goes',ok:['all','kids','teen','adult'],label:'grown-ups'}
 };
-const AGE_TAG = {all:'All ages',kids:'Ages 8+',teen:'Ages 13+'};
+const AGE_TAG = {all:'All ages',kids:'Ages 8+',teen:'Ages 13+',adult:'Adults'};
+
+/* ---------- synced lineup ----------
+   data/catalog.json is refreshed daily from TMDB by .github/workflows/sync-lineup.yml.
+   Hand-curated titles keep their mood tags and gain posters, keywords and missing details;
+   new Angel titles join the deck with tags inferred from TMDB genres and keywords. */
+const LINEUP = {loaded:false, added:0, notice:''};
+async function loadLineup(){
+  if(!/^https?:$/.test(location.protocol)) return;
+  let doc; try{ const r=await fetch('data/catalog.json',{cache:'no-cache'}); if(!r.ok) return; doc=await r.json(); }catch{ return; }
+  if(!doc||!Array.isArray(doc.titles)) return;
+  const AGES=['all','kids','teen','adult'], LENS=['short','movie','epic'];
+  doc.titles.forEach(x=>{
+    if(!x||!x.id||!x.t) return;
+    const have=BY_ID[x.id];
+    if(have){
+      if(x.poster) have.poster=x.poster;
+      if(x.keywords) have.keywords=x.keywords;
+      if(!have.cast.length&&x.cast) have.cast=x.cast.slice(0,4);
+      if(have.unverified&&x.b){ have.b=x.b; delete have.unverified; }
+      return;
+    }
+    if(!Array.isArray(x.tags)||!x.tags.length) return;
+    const c={id:x.id,t:String(x.t),y:x.y||'',k:x.k||'Movie',age:AGES.includes(x.age)?x.age:'teen',g:Array.isArray(x.g)?x.g:['drama'],tags:x.tags,
+      i:Math.max(1,Math.min(5,Number(x.i)||3)),len:LENS.includes(x.len)?x.len:'movie',cast:Array.isArray(x.cast)?x.cast.slice(0,4):[],
+      b:x.b||'New on Angel.',poster:x.poster||null,keywords:x.keywords||[],synced:true};
+    CATALOG.push(c); BY_ID[c.id]=c; LINEUP.added++;
+  });
+  LINEUP.loaded=true; LINEUP.notice=doc.notice||'';
+  rankCache.clear();
+  render();
+}
 const fits = item => { const a=AUDIENCE[(S.game&&S.game.audience)||'adults']; return !item.age || a.ok.includes(item.age); };
 const OCCASIONS = {
   birthday:{n:'Birthday party',line:h=>h?`${h} is having a birthday party!`:'We’re having a birthday party!'},
@@ -648,8 +679,8 @@ function roomRead(){
 function poster(e, extra=''){
   const h=hash(e.id||e.t)%360, h2=(h+50)%360;
   const kind = e.custom ? 'Write-in' : (e.k||'Movie');
-  const art = ART.titles[e.id];
-  const bg = art ? `background:#0d0a1c url('${blob(art)}') center/cover no-repeat` : `background:linear-gradient(155deg,hsl(${h} 70% 52%),hsl(${h2} 65% 28%) 70%,hsl(${h2} 60% 16%))`;
+  const art = ART.titles[e.id] ? blob(ART.titles[e.id]) : (BY_ID[e.id]&&BY_ID[e.id].poster);
+  const bg = art ? `background:#0d0a1c url('${String(art).replace(/['"()\\]/g,'')}') center/cover no-repeat` : `background:linear-gradient(155deg,hsl(${h} 70% 52%),hsl(${h2} 65% 28%) 70%,hsl(${h2} 60% 16%))`;
   return `<div class="poster${art?' has-art':''}" style="${bg}">
     <span class="kind">${esc(kind)}</span>${e.age||(BY_ID[e.id]&&BY_ID[e.id].age)?`<span class="agechip">${AGE_TAG[e.age||BY_ID[e.id].age]}</span>`:''}<div class="pt">${esc(e.t)}</div>
     <div class="py">${e.y?esc(e.y):''}${(BY_ID[e.id]&&BY_ID[e.id].guild)?' \u00b7 <span class="gchip">Guild</span>':''}${extra}</div></div>`;
@@ -886,7 +917,7 @@ function vHome(){
     <li><span><b>Nominate.</b> The app pitches Angel titles matched to you. Say yes, pass, or add your own.</span></li>
     <li><span><b>Bracket.</b> Head-to-head votes until one title wins the night.</span></li>
   </ol></div>
-  <p class="fine">Titles come from a hand-picked sample of the Angel lineup for this prototype, not a live catalog.</p>`;
+  <p class="fine">${LINEUP.loaded?`${CATALOG.length} Angel titles, refreshed daily. Lineup details and posters come from TMDB. ${esc(LINEUP.notice)}`:'Titles come from a hand-picked sample of the Angel lineup for this prototype, not a live catalog.'}</p>`;
 }
 function vHost(){
   const u=S.ui;
@@ -1477,6 +1508,7 @@ function confetti(){
   let local=lsGet('wswt-pid'); if(!local){ local='p-'+rid(10); lsSet('wswt-pid',local); }
   S.me.id=local;
   render();
+  loadLineup();
   if(!window.claude||!window.claude.use) return;
   window.claude.use('downloads').then(d=>{ S.dl=d; }).catch(()=>{});
   window.claude.use('assets').then(a=>{ S.assets=a; render(); }).catch(()=>{});

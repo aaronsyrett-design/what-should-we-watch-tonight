@@ -23,3 +23,20 @@ Outside claude.ai the game runs in **Solo test mode**: everything works on one d
 - The host's device is the authority: it advances stages, builds the bracket, resolves matches, and drives the test bots.
 
 See [docs/CONTEXT.md](docs/CONTEXT.md) for the game flow, data model, scoring, and the list of known limits and next ideas.
+
+## Daily lineup refresh
+
+Every morning a GitHub Action (`.github/workflows/sync-lineup.yml`) pulls Angel Studios titles from [TMDB](https://www.themoviedb.org/) and saves them to `data/catalog.json`. When the game is served over the web, it loads that file at start-up:
+
+- Hand-curated titles keep their mood tags and gain TMDB posters, keywords and any missing details.
+- New Angel titles join the swipe deck, with mood tags, intensity and age fit inferred from TMDB genres, keywords and US ratings.
+
+**Setup (one time):**
+1. Create a free TMDB account and request an API key at https://www.themoviedb.org/settings/api.
+2. Copy the **API Read Access Token** (the long one).
+3. In this repo, go to **Settings → Secrets and variables → Actions → New repository secret**, name it `TMDB_TOKEN`, and paste the token.
+4. Go to **Actions → Refresh Angel lineup → Run workflow** to run it once now. After that it runs daily.
+
+Until the secret exists, the job exits quietly without changing anything. Test the sync locally against a fake TMDB with `node scripts/test-sync.mjs`.
+
+This product uses the TMDB API but is not endorsed or certified by TMDB. Check TMDB's API terms before any commercial launch.
