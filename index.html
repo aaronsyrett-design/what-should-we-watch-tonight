@@ -1,0 +1,1432 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>What Should We Watch Tonight?</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: one-column game screen, max 560px, marquee display type, bracket scrolls sideways in its own box */
+:root{
+  --night:#15112A; --panel:#211B3D; --panel2:#2C2552; --line:#3D3570;
+  --ink:#F4F0FF; --muted:#ABA2D0; --gold:#FFC145; --coral:#FF6F59; --mint:#5CE1B0;
+  --display:"Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  --body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme:dark;
+}
+html,body{min-height:100%}
+body{background:var(--night);color:var(--ink);font:16px/1.5 var(--body);
+  background-image:radial-gradient(ellipse 80% 50% at 50% -10%, #3a2a6e 0%, transparent 70%);
+  background-attachment:fixed}
+.wrap{max-width:560px;margin:0 auto;padding-block:20px 48px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));
+  display:flex;flex-direction:column;gap:20px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font:800 18px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
+.badge{font:600 12px/1 var(--body);padding:6px 10px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+.badge.live{color:var(--mint);border-color:color-mix(in srgb,var(--mint) 45%,transparent)}
+h1{font:900 clamp(48px,14vw,76px)/.9 var(--display);text-transform:uppercase;margin:0;text-wrap:balance;letter-spacing:.01em}
+h1 em{font-style:normal;color:var(--gold)}
+h2{font:800 clamp(30px,8vw,40px)/1 var(--display);text-transform:uppercase;margin:0;text-wrap:balance}
+p{margin:0}
+.lede{color:var(--muted);font-size:17px;max-width:44ch}
+.eyebrow{font:700 12px/1 var(--body);text-transform:uppercase;letter-spacing:.14em;color:var(--coral)}
+.stack{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1 1 140px}
+button{font:inherit;cursor:pointer;border:0;color:inherit}
+.btn{font:700 17px/1 var(--body);padding:16px 18px;border-radius:14px;background:var(--gold);color:#22180A;
+  transition:transform .12s, filter .12s}
+.btn:hover{filter:brightness(1.07)}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.coral{background:var(--coral);color:#2A0F0A}
+.btn.small{font-size:14px;padding:10px 14px;border-radius:10px}
+.btn[disabled]{opacity:.4;cursor:not-allowed;filter:none}
+:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px}
+label.lbl{font:600 14px/1.2 var(--body);color:var(--muted)}
+input[type=text]{font:600 18px/1 var(--body);background:var(--panel2);color:var(--ink);border:1.5px solid var(--line);
+  border-radius:12px;padding:14px 14px;width:100%;box-sizing:border-box}
+input[type=text]:focus{border-color:var(--gold);outline:none}
+input.code{font:700 30px/1 var(--mono);letter-spacing:.35em;text-transform:uppercase;text-align:center}
+.stepper{display:flex;align-items:center;gap:14px}
+.stepper button{width:52px;height:52px;border-radius:50%;background:var(--panel2);border:1.5px solid var(--line);font:700 26px/1 var(--body)}
+.stepper output{font:900 64px/1 var(--display);min-width:2ch;text-align:center;color:var(--gold);font-variant-numeric:tabular-nums}
+.steps{display:grid;gap:10px;counter-reset:s;margin:0;padding:0;list-style:none}
+.steps li{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start;color:var(--muted)}
+.steps li::before{counter-increment:s;content:counter(s);font:800 22px/1.1 var(--display);color:var(--gold)}
+.steps b{color:var(--ink);font-weight:600}
+.tiles{display:flex;gap:8px;justify-content:center}
+.tiles span{font:700 40px/1 var(--mono);width:58px;height:70px;display:grid;place-items:center;border-radius:12px;
+  background:var(--panel2);border:1.5px solid var(--gold);color:var(--gold)}
+.people{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px 8px 8px;border-radius:99px;background:var(--panel2);font-weight:600;font-size:15px}
+.chip .av{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 13px/1 var(--body);color:#1a1230}
+.chip.empty{background:transparent;border:1.5px dashed var(--line);color:var(--muted);padding:8px 14px}
+.chip small{color:var(--muted);font-weight:500}
+.chip .ok{color:var(--mint);font-weight:700}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.opt{text-align:left;padding:14px;border-radius:14px;background:var(--panel2);border:1.5px solid var(--line);font-weight:600;line-height:1.25;
+  display:flex;flex-direction:column;gap:4px;min-height:72px}
+.opt small{color:var(--muted);font-weight:500;font-size:13px}
+.opt[aria-pressed=true]{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 14%,var(--panel2))}
+.progress{display:flex;gap:6px}
+.progress i{flex:1;height:5px;border-radius:9px;background:var(--line)}
+.progress i.on{background:var(--gold)}
+.read{border-left:3px solid var(--coral);padding:4px 0 4px 14px;color:var(--ink);font-size:16px}
+.poster{position:relative;border-radius:16px;overflow:hidden;aspect-ratio:2/3;max-width:100%;display:flex;flex-direction:column;justify-content:flex-end;
+  padding:16px;box-sizing:border-box;isolation:isolate}
+.poster::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 30%,rgba(10,6,24,.85))}
+.poster .kind{position:absolute;top:12px;left:12px;font:700 11px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;
+  background:rgba(10,6,24,.55);padding:6px 8px;border-radius:6px}
+.poster .pt{font:900 30px/.95 var(--display);text-transform:uppercase;text-wrap:balance;color:#fff}
+.poster .py{font:500 13px/1.3 var(--body);color:rgba(255,255,255,.8);margin-top:6px}
+.deck{display:grid;grid-template-columns:minmax(0,200px) minmax(0,1fr);gap:16px;align-items:center}
+.deck .blurb{color:var(--muted);font-size:15px}
+.deck .match{font:700 13px/1 var(--mono);color:var(--gold);margin-top:10px}
+.deck .why{font-size:13px;color:var(--mint);font-weight:600;margin-top:8px}
+@media (max-width:440px){.deck{grid-template-columns:1fr}.deck .poster{max-width:220px;margin:0 auto;width:100%}}
+.noms{display:flex;flex-direction:column;gap:8px}
+.nom{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:12px;background:var(--panel2);font-weight:600}
+.nom button{background:none;color:var(--muted);font-size:13px;text-decoration:underline}
+.vs{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center}
+.vs .mid{font:900 34px/1 var(--display);color:var(--coral)}
+@media (max-width:440px){.vs{gap:6px}.vs .mid{font-size:24px}.pick .poster .pt{font-size:22px}}
+.pick{display:flex;flex-direction:column;gap:8px;padding:0;background:none;text-align:left;border-radius:18px}
+.pick .poster{outline:3px solid transparent;outline-offset:3px;transition:outline-color .15s, transform .15s}
+.pick:hover .poster{transform:translateY(-2px)}
+.pick[aria-pressed=true] .poster{outline-color:var(--gold)}
+.pick .votes{font:700 13px/1 var(--mono);color:var(--muted);min-height:16px}
+.pick.won .poster{outline-color:var(--mint)}
+.pick.lost{opacity:.35}
+.status{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:14px}
+.bracket-box{overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;margin-inline:-4px;padding-inline:4px}
+.bracket{display:flex;gap:14px;min-width:max-content}
+.round{display:flex;flex-direction:column;justify-content:space-around;gap:10px;min-width:132px}
+.round h4{margin:0 0 2px;font:700 11px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.m{display:flex;flex-direction:column;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+.m.now{border-color:var(--gold);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 25%,transparent)}
+.m span{font:600 12.5px/1.2 var(--body);display:block;padding:7px 9px;background:var(--panel2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}
+.m span+span{border-top:1px solid var(--line)}
+.m span.w{color:var(--gold)}
+.m span.l{color:var(--muted);text-decoration:line-through}
+.m span.tbd{color:var(--muted);font-weight:500}
+.bulbs{height:10px;background-image:radial-gradient(circle,var(--gold) 2.5px,transparent 3.5px);background-size:18px 10px;opacity:.85}
+.marquee{border:2px solid var(--gold);border-radius:20px;padding:22px 18px;text-align:center;display:flex;flex-direction:column;gap:14px;align-items:center;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--gold) 10%,var(--panel)),var(--panel))}
+.marquee .poster{width:min(240px,70%)}
+.fine{font-size:13px;color:var(--muted)}
+.poster.has-art::after{background:linear-gradient(180deg,rgba(10,6,24,.15) 0%,transparent 35%,transparent 55%,rgba(10,6,24,.9))}
+.poster.has-art .pt{font-size:26px}
+.swipe-zone{position:relative;width:min(100%,340px);margin:0 auto;touch-action:pan-y}
+.swipe-zone .under{position:absolute;inset:0;transform:scale(.94) translateY(14px);opacity:.55;filter:saturate(.7);pointer-events:none}
+.swipecard{position:relative;border-radius:16px;cursor:grab;user-select:none;-webkit-user-select:none;touch-action:pan-y;will-change:transform;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.swipecard.drag{cursor:grabbing}
+.swipecard .poster{pointer-events:none}
+.swipecard .poster .pt{font-size:34px}
+.stamp{position:absolute;top:22px;font:900 30px/1 var(--display);text-transform:uppercase;letter-spacing:.06em;padding:6px 12px;border:3px solid;border-radius:10px;opacity:0;pointer-events:none}
+.stamp.yes{left:16px;color:var(--mint);transform:rotate(-12deg);background:rgba(10,6,24,.55)}
+.stamp.no{right:16px;color:var(--coral);transform:rotate(12deg);background:rgba(10,6,24,.55)}
+.deck-info{max-width:520px;margin:0 auto;width:100%}
+.deck-info .blurb{color:var(--muted);font-size:15px;margin:0}
+.deck-info .match{font:700 13px/1 var(--mono);color:var(--gold)}
+.deck-info .why{font-size:13px;color:var(--mint);font-weight:600}
+.swipe-btns{display:flex;align-items:center;justify-content:center;gap:28px}
+.swbtn{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;background:var(--panel2);border:2px solid var(--line);transition:transform .12s}
+.swbtn:active{transform:scale(.92)}
+.swbtn.no{color:var(--coral);border-color:color-mix(in srgb,var(--coral) 55%,var(--line))}
+.swbtn.yes{color:#0f2a20;background:var(--mint);border-color:var(--mint)}
+.swipe-hint{font-size:13px;color:var(--muted)}
+.cast{display:flex;flex-wrap:wrap;gap:8px}
+.castp{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;padding:3px 10px 3px 3px;border-radius:99px;background:var(--panel2)}
+.face{border-radius:50%;object-fit:cover;display:inline-grid;place-items:center;flex:none;color:#1a1230;font-weight:700;font-family:var(--body)}
+.opt.with-face{flex-direction:row;align-items:center;gap:10px}
+.opt.with-face>span:last-child{display:flex;flex-direction:column;gap:3px;min-width:0}
+.artrow{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:12px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.artrow:last-child{border-bottom:0}
+.artthumb{width:48px;display:grid;place-items:center}
+.artthumb.title{height:64px;border-radius:6px;background:var(--panel2);overflow:hidden}
+.artthumb.title img{width:100%;height:100%;object-fit:cover}
+.artname{display:flex;flex-direction:column;gap:2px;font-weight:600;min-width:0}
+.artname small{color:var(--muted);font-weight:500;font-size:12px}
+label.btn{cursor:pointer}
+input[type=email]{font:600 17px/1 var(--body);background:var(--panel2);color:var(--ink);border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;width:100%;box-sizing:border-box;min-width:0}
+input[type=email]:focus{border-color:var(--gold);outline:none}
+.switch{display:flex;align-items:center;gap:14px;text-align:left;padding:14px;border-radius:14px;background:var(--panel2);border:1.5px solid var(--line);width:100%}
+.switch>span:last-child{display:flex;flex-direction:column;gap:3px;min-width:0}
+.switch small{color:var(--muted);font-size:13px;font-weight:500}
+.switch .knob{flex:none;width:44px;height:26px;border-radius:99px;background:var(--line);position:relative;transition:background .15s}
+.switch .knob::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--ink);transition:transform .15s}
+.switch[aria-pressed=true]{border-color:var(--gold)}
+.switch[aria-pressed=true] .knob{background:var(--gold)}
+.switch[aria-pressed=true] .knob::after{transform:translateX(18px);background:#22180A}
+.party{padding:0;border:0;background:none}
+.party.on{padding:16px;background:var(--panel);border:1px solid var(--line)}
+.crown{font:700 10.5px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:99px;background:var(--gold);color:#22180A;margin-left:2px}
+.gchip{display:inline-block;font:700 10.5px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;padding:3px 6px;border-radius:5px;background:var(--gold);color:#22180A;vertical-align:1px}
+.agechip{position:absolute;top:12px;right:12px;font:700 11px/1 var(--body);background:rgba(10,6,24,.55);padding:6px 8px;border-radius:6px}
+.invite{border:2px dashed var(--gold);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px;background:color-mix(in srgb,var(--gold) 6%,var(--panel))}
+.invite p{color:var(--ink)}
+.invite-facts{display:flex;flex-wrap:wrap;gap:8px}
+.invite-facts span{font-size:13px;color:var(--muted);padding:6px 10px;border-radius:99px;background:var(--panel2)}
+.invite-facts b{color:var(--ink);font-family:var(--mono)}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--muted);cursor:pointer}
+.check input{width:18px;height:18px;margin-top:1px;accent-color:var(--gold)}
+.hostcta{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;border-radius:14px;background:var(--panel2);flex-wrap:wrap}
+.hostcta small{color:var(--muted);font-size:13px}
+.badges{border-color:var(--gold)}
+.badge-card{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr);gap:18px;align-items:start}
+.badge-card img{width:100%;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.45);-webkit-touch-callout:default}
+.badge-wait{aspect-ratio:4/5;border-radius:14px;display:grid;place-items:center;text-align:center;padding:12px;color:var(--muted);font-weight:600;
+  background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--b) 35%,transparent),var(--panel2) 70%)}
+@media (max-width:480px){.badge-card{grid-template-columns:1fr}.badge-card img,.badge-wait{max-width:300px;margin:0 auto;width:100%}}
+.cap{font-size:15px;line-height:1.45;white-space:pre-line;user-select:text}
+.row.tight>*{flex:0 1 auto}
+.socials{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+.soc{display:flex;align-items:center;justify-content:center;padding:12px 8px;border-radius:12px;background:var(--panel2);border:1.5px solid var(--line);
+  color:var(--ink);font:700 14px/1 var(--body);text-decoration:none;cursor:pointer}
+.soc:hover{border-color:var(--gold)}
+.lb{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;border-radius:14px;background:var(--panel2);flex-wrap:wrap}
+.lb small{color:var(--muted);font-size:13px}
+a.btn{text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.bchips{display:flex;flex-wrap:wrap;gap:4px}
+.bchips i{font-style:normal;font:700 11px/1 var(--body);letter-spacing:.04em;padding:4px 7px;border-radius:99px;color:#1a1230;background:var(--b)}
+.awards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.award{display:flex;flex-direction:column;gap:4px;padding:12px;border-radius:12px;background:var(--panel2)}
+.award .lbl{text-transform:uppercase;letter-spacing:.12em;font-size:11px;color:var(--coral)}
+.award b{font:800 22px/1.05 var(--display);text-transform:uppercase}
+.award small{color:var(--muted);font-size:13px;line-height:1.3}
+.board{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.board li{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 14px;border-radius:12px;border:1px solid var(--line)}
+.board li.lead{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 9%,transparent)}
+.board .rk{font:900 22px/1 var(--display);color:var(--muted)}
+.board li.lead .rk{color:var(--gold)}
+.board .who{display:flex;flex-direction:column;gap:3px;min-width:0}
+.board .who small{color:var(--muted);font-size:13px;line-height:1.3}
+.board .pts{font:700 24px/1 var(--mono);font-variant-numeric:tabular-nums;color:var(--ink);text-align:right}
+.board .pts small{font-size:11px;color:var(--muted);margin-left:3px}
+h3{font:800 28px/1 var(--display);text-transform:uppercase;margin:0;color:var(--gold);text-wrap:balance}
+.pairing .kind{text-transform:uppercase;letter-spacing:.12em;font-size:11px;color:var(--mint)}
+.divider{height:1px;background:var(--line);margin:6px 0}
+.snack{border-color:color-mix(in srgb,var(--coral) 45%,var(--line))}
+.recipe{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:20px}
+@media (max-width:520px){.recipe{grid-template-columns:1fr}}
+.ing,.how{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:15px}
+.ing{list-style:none;padding:0}
+.ing b{font-variant-numeric:tabular-nums;color:var(--gold);font-weight:700}
+.how li::marker{color:var(--coral);font-weight:700}
+.fine a{color:var(--gold)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--night);
+  padding:12px 16px;border-radius:12px;font-weight:600;font-size:14px;max-width:min(90vw,460px);z-index:20;box-shadow:0 8px 30px rgba(0,0,0,.4)}
+canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:15;width:100%;height:100%}
+.pulse{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap" id="app"></div>
+<div class="toast" id="toast" hidden></div>
+<canvas id="fx" hidden></canvas>
+
+<script>
+/* ---------- Sample Angel lineup (hand-curated, not a live catalog feed) ---------- */
+const CATALOG = [
+  {id:'sof',age:'teen',t:'Sound of Freedom',k:'Movie',y:2023,g:['thriller','true'],tags:['thrill','inspire','cry'],i:5,len:'movie',cast:['Jim Caviezel'],b:'A federal agent goes off the books to rescue kids from traffickers. Tense and heavy.'},
+  {id:'onlyson',age:'teen',t:'His Only Son',k:'Movie',y:2023,g:['faith','drama'],tags:['faith','cry','epic'],i:3,len:'movie',cast:[],b:'Abraham’s journey up the mountain with Isaac, staged as a sweeping desert drama.'},
+  {id:'cabrini',age:'teen',t:'Cabrini',k:'Movie',y:2024,g:['true','drama'],tags:['inspire','learn','heart'],i:3,len:'epic',cast:['Cristiana Dell’Anna','John Lithgow'],b:'An Italian nun takes on 1889 New York to build homes for immigrant orphans.'},
+  {id:'bonhoeffer',age:'teen',t:'Bonhoeffer',k:'Movie',y:2024,g:['true','thriller'],tags:['thrill','learn','inspire'],i:4,len:'epic',cast:[],b:'A pastor joins the plot against Hitler. Spy story meets moral reckoning.'},
+  {id:'kingofkings',age:'all',t:'The King of Kings',k:'Animated',y:2025,g:['family','faith'],tags:['heart','family','faith','cozy'],i:1,len:'movie',cast:['Kenneth Branagh','Oscar Isaac','Mark Hamill','Ben Kingsley','Uma Thurman','Pierce Brosnan'],b:'Charles Dickens tells his restless son the story of Jesus. Big-hearted animation for all ages.'},
+  {id:'david',age:'all',t:'David',k:'Animated',y:2025,g:['family','faith'],tags:['adventure','family','epic','faith'],i:2,len:'movie',cast:[],b:'The shepherd boy who faced a giant, as a full-scale animated musical adventure.'},
+  {id:'sketch',age:'kids',t:'Sketch',k:'Movie',y:2025,g:['family','comedy'],tags:['funny','adventure','family','heart'],i:1,len:'movie',cast:['Tony Hale','D’Arcy Carden'],b:'A girl’s notebook monsters escape into the real world. Chaotic, funny, and secretly about grief.'},
+  {id:'lastrodeo',age:'kids',t:'The Last Rodeo',k:'Movie',y:2025,g:['drama'],tags:['heart','inspire','cry'],i:3,len:'movie',cast:['Neal McDonough'],b:'A retired bull rider climbs back on to pay for his grandson’s surgery.'},
+  {id:'truthtreason',age:'teen',t:'Truth & Treason',k:'Movie',y:2025,g:['true','thriller'],tags:['thrill','learn','cry'],i:4,len:'movie',cast:['Rupert Evans'],b:'A teenager in Nazi Germany starts an underground resistance with a radio and a typewriter.'},
+  {id:'possumtrot',age:'teen',t:'Sound of Hope: The Story of Possum Trot',k:'Movie',y:2024,g:['true','drama','faith'],tags:['cry','heart','inspire'],i:3,len:'movie',cast:['Nika King','Demetrius Grosse'],b:'A small Texas church adopts 77 kids out of foster care. Bring tissues.'},
+  {id:'homestead',age:'teen',t:'Homestead',k:'Movie',y:2024,g:['thriller','drama'],tags:['thrill','adventure'],i:4,len:'epic',cast:['Neal McDonough'],b:'The grid goes down and a compound of preppers has to decide who gets in.'},
+  {id:'wingfeather',age:'all',t:'The Wingfeather Saga',k:'Series',y:2022,g:['family'],tags:['adventure','family','heart'],i:2,len:'short',cast:[],b:'Three siblings, a hidden jewel, and lizard-faced villains. Storybook fantasy in episodes.'},
+  {id:'tuttle',age:'all',t:'Tuttle Twins',k:'Series',y:2021,g:['family','comedy'],tags:['funny','learn','family'],i:1,len:'short',cast:[],b:'Twins and their wheelchair-riding grandma time-travel through big ideas. Fast and silly.'},
+  {id:'drybar',age:'kids',t:'Dry Bar Comedy',k:'Special',y:2017,g:['comedy'],tags:['funny','cozy'],i:1,len:'short',cast:[],b:'Clean stand-up sets you can play with anyone in the room. Lowest-risk laugh on the list.'},
+  {id:'solomio',age:'kids',t:'Solo Mio',k:'Movie',y:2026,g:['comedy'],tags:['funny','heart','cozy'],i:1,len:'movie',cast:['Kevin James'],b:'Kevin James gets left at the altar and takes the honeymoon to Italy alone.'},
+  {id:'animalfarm',age:'kids',t:'Animal Farm',k:'Animated',y:2026,g:['family','drama'],tags:['learn','funny','thrill'],i:3,len:'movie',cast:['Seth Rogen','Woody Harrelson','Glenn Close','Kieran Culkin'],b:'Orwell’s barnyard revolution, animated by Andy Serkis with a big-name voice cast.'},
+  {id:'youngwash',age:'teen',t:'Young Washington',k:'Movie',y:2026,g:['true'],tags:['epic','inspire','learn','adventure'],i:3,len:'epic',cast:['Kelsey Grammer','Mary-Louise Parker','Ben Kingsley'],b:'George Washington before the legend: frontier wars, mistakes, and a country not yet born.'},
+  {id:'runner',age:'teen',t:'Runner',k:'Movie',y:2026,g:['thriller'],tags:['thrill','adventure'],i:4,len:'movie',cast:['Owen Wilson','Alan Ritchson'],b:'A courier has hours to get a donor liver to a sick girl while people try to stop him.'},
+  {id:'badman',age:'teen',t:'Angel and the Badman',k:'Movie',y:2026,g:['thriller','drama'],tags:['adventure','heart','thrill'],i:3,len:'movie',cast:['Tommy Lee Jones','Zachary Levi','Neal McDonough'],b:'A gunslinger lands in a Quaker household and starts to wonder who he could be.'},
+  {id:'sight',age:'teen',t:'Sight',k:'Movie',y:2024,g:['true','drama'],tags:['inspire','heart','learn'],i:2,len:'movie',cast:['Greg Kinnear','Terry Chen'],b:'A refugee kid grows up to become a pioneering eye surgeon.'},
+  {id:'afterdeath',age:'teen',t:'After Death',k:'Documentary',y:2023,g:['docs','faith'],tags:['learn','faith'],i:3,len:'movie',cast:[],b:'People who were declared dead describe what they saw. Good for a talk afterward.'},
+  {id:'theshift',age:'teen',t:'The Shift',k:'Movie',y:2023,g:['thriller','faith'],tags:['thrill','adventure','faith'],i:4,len:'movie',cast:['Kristoffer Polaha','Neal McDonough'],b:'A Job story as multiverse sci-fi. A man gets pulled into a world that wants to break him.'},
+  {id:'wayfinders',age:'kids',t:'The Wayfinders',k:'Series',y:2025,g:['family','thriller'],tags:['adventure','epic','family'],i:3,len:'short',cast:['Tamara Smart','Evan Nikolas Fields'],b:'Three high schoolers get pulled into a war-torn medieval land full of sorcery and have to follow a prophecy to get home.'},
+  /* Added from the Angel lineup screenshots (Oct 2026). guild:true = marked Members Only in the Angel app. */
+  {id:'stillhope',age:'teen',t:'Still Hope',k:'Movie',y:2025,g:['true','drama','faith'],tags:['inspire','cry','heart'],i:4,len:'movie',cast:[],b:'Based on a true story: a young woman rebuilds her life and finds hope after surviving sex trafficking.'},
+  {id:'guarded',age:'teen',t:'Guarded',k:'Series',y:2025,g:['drama','thriller'],tags:['thrill','heart'],i:3,len:'short',cast:['Emily Sweet','Chris Reid'],b:'A former detective goes undercover as a rich man’s assistant and bodyguard to help her father. Romance, secrets and danger.'},
+  {id:'youngwarriors',age:'teen',guild:true,t:'Young Warriors',k:'Movie',y:2026,g:['drama'],tags:['heart','inspire'],i:3,len:'movie',cast:[],b:'A members-only Angel release. Full details coming soon.',unverified:true},
+  {id:'mary4mayor',age:'kids',guild:true,t:'Mary 4 Mayor',k:'Movie',y:2021,g:['comedy','faith'],tags:['funny','heart','faith'],i:1,len:'movie',cast:[],b:'A small-town faith film about one woman stepping up to run for mayor.'},
+  {id:'philwickham',age:'all',t:'Phil Wickham: Song of the Saints Tour Live',k:'Concert',y:2025,g:['docs','faith'],tags:['inspire','faith','epic'],i:1,len:'movie',cast:['Phil Wickham'],b:'A full worship concert from Phil Wickham’s tour. Turn it up and sing along.'},
+  {id:'testament',age:'teen',t:'Testament',k:'Series',y:2025,g:['faith','drama','thriller'],tags:['faith','thrill','inspire'],i:3,len:'short',cast:[],b:'The Book of Acts retold in an alternate modern world, with the early church under pressure.'},
+  {id:'pettymurphy',age:'teen',t:'Keith Pedro: Petty Murphy',k:'Special',y:2025,g:['comedy'],tags:['funny','cozy'],i:1,len:'short',cast:['Keith Pedro'],b:'A stand-up hour from Keith Pedro about the small grudges everyone keeps.'},
+  {id:'turnersparks',age:'teen',t:'Turner Sparks: Buttoned Up & Unhinged',k:'Special',y:2025,g:['comedy'],tags:['funny','cozy'],i:1,len:'short',cast:['Turner Sparks'],b:'A stand-up set from Turner Sparks, buttoned-up on the outside and unhinged everywhere else.'},
+  {id:'michaelyo',age:'teen',t:'Michael Yo: I Feel Ugly',k:'Special',y:2025,g:['comedy'],tags:['funny','cozy'],i:1,len:'short',cast:['Michael Yo'],b:'Michael Yo’s stand-up special on family, marriage and getting older.'},
+  {id:'robschneider',age:'teen',t:'Rob Schneider: I Really Love You',k:'Special',y:2025,g:['comedy'],tags:['funny','cozy'],i:1,len:'short',cast:['Rob Schneider'],b:'Rob Schneider back on stage with a stand-up hour.'},
+  {id:'shaynesmith',age:'teen',t:'Shayne Smith: Kangaroo Killer',k:'Special',y:2025,g:['comedy'],tags:['funny'],i:2,len:'short',cast:['Shayne Smith'],b:'A stand-up hour from tattooed, deadpan comic Shayne Smith.'},
+  {id:'notashamed',age:'teen',t:'I’m Not Ashamed',k:'Movie',y:2016,g:['true','drama','faith'],tags:['cry','inspire','faith'],i:4,len:'movie',cast:[],b:'The true story of Rachel Joy Scott, the first student killed at Columbine, told through her journals.'},
+  {id:'persephone',age:'kids',t:'Seeking Persephone',k:'Series',y:2026,g:['drama'],tags:['heart','cozy'],i:1,len:'short',cast:['Ryann Bailey','Jake Stormoen'],b:'A Regency romance: to save her family, a young woman marries a cold, scarred duke and tries to reach the man underneath.'},
+  {id:'spacebetween',age:'teen',t:'The Space Between Us',k:'Movie',y:2026,g:['drama','faith'],tags:['heart','cry'],i:3,len:'movie',cast:['Jennifer Bini Taylor','Kristoffer Polaha'],b:'A drifting marriage hits a breaking point, and a couple has to decide whether forgiveness can rebuild their family.'},
+  {id:'threadbound',age:'kids',guild:true,t:'Thread Bound',k:'Movie',y:2026,g:['drama','faith'],tags:['heart','inspire'],i:2,len:'movie',cast:['Hailey Ibberson','Brady Copeland'],b:'A doubting teenager befriends a mysterious boy with a gift for healing, and old family wounds start to open.'},
+  {id:'redemptionriver',age:'kids',guild:true,t:'Redemption River',k:'Movie',y:2026,g:['drama','thriller','faith'],tags:['thrill','heart','faith'],i:3,len:'movie',cast:['Heather Land','Brad Stine'],b:'A grieving couple’s rafting trip turns into a fight to survive when an accident strands them on the river.'},
+  {id:'fivemilecave',age:'kids',guild:true,t:'The Legend of 5 Mile Cave',k:'Movie',y:2019,g:['family','drama'],tags:['adventure','family','heart'],i:2,len:'movie',cast:[],b:'An old-west family adventure about a widow, her son and a tall tale of gold in a cave.'},
+  {id:'godscompass',age:'kids',guild:true,t:'God’s Compass',k:'Movie',y:2016,g:['drama','faith'],tags:['inspire','heart','faith'],i:2,len:'movie',cast:[],b:'A newly retired school principal faces money trouble and family crises and has to lean on her faith.'},
+  {id:'elva',age:'kids',guild:true,t:'Elva: Art of Redemption',k:'Movie',y:2026,g:['drama','faith'],tags:['heart','inspire','faith'],i:2,len:'epic',cast:['Anya Koziar'],b:'A young woman raised Old Order Mennonite is torn between the life she knows and the independence she wants.'},
+  {id:'secondgreatest',age:'teen',guild:true,t:'2nd Greatest',k:'Movie',y:2026,g:['drama'],tags:['heart','inspire'],i:3,len:'movie',cast:[],b:'A members-only Angel release. Full details coming soon.',unverified:true},
+  {id:'hecallsme',age:'teen',guild:true,t:'He Calls Me Daughter',k:'Documentary',y:2026,g:['docs','faith'],tags:['learn','heart','inspire'],i:3,len:'movie',cast:['Chonda Pierce','Alex Kendrick','Lynsi Snyder'],b:'Women share how a hard or missing father shaped them, and how faith helped them heal.'},
+  {id:'christianmingle',age:'kids',guild:true,t:'Christian Mingle',k:'Movie',y:2014,g:['comedy','faith'],tags:['funny','heart','cozy'],i:1,len:'movie',cast:['Lacey Chabert'],b:'A woman fakes her faith on a dating site to land a guy, and then has to figure out what she actually believes.'},
+  {id:'smokies',age:'kids',guild:true,t:'Christmas in the Smokies',k:'Movie',y:2015,g:['family','comedy'],tags:['cozy','heart','family'],i:1,len:'movie',cast:[],b:'A family berry farm in the Smoky Mountains, a country star back home for Christmas, and a second chance at love.'},
+  {id:'andrewpacker',age:'teen',t:'Andrew Packer: Never Call Her Crazy',k:'Special',y:2025,g:['comedy'],tags:['funny','cozy'],i:1,len:'short',cast:['Andrew Packer'],b:'A stand-up hour from Andrew Packer on dating, marriage and the words you never say out loud.'},
+  {id:'chrisclarke',age:'teen',t:'Chris Clarke: American-Born Jamaican Parents',k:'Special',y:2025,g:['comedy'],tags:['funny','cozy'],i:1,len:'short',cast:['Chris Clarke'],b:'Chris Clarke on growing up American with very Jamaican parents.'},
+  {id:'moniquemarvez',age:'teen',t:'Monique Marvez: The 1900s Rocked',k:'Special',y:2025,g:['comedy'],tags:['funny','cozy'],i:1,len:'short',cast:['Monique Marvez'],b:'Monique Marvez makes the case that life before smartphones was better, and funnier.'}
+];
+/* "Who would you hang out with?" Each actor reads as a personality: those tags feed the profile, and their own titles get a direct boost. */
+const ACTORS = {
+  kevin:{n:'Kevin James',s:'Easy laughs, zero pretense',tags:['funny','cozy'],read:'Kevin James as your hang means you want easy laughs, not homework.'},
+  owen:{n:'Owen Wilson',s:'Laid-back, up for anything',tags:['funny','adventure'],read:'Owen Wilson says you want something relaxed that still goes somewhere.'},
+  alan:{n:'Alan Ritchson',s:'All gas, no brakes',tags:['thrill','adventure'],read:'Alan Ritchson says you want momentum. Action climbs your list.'},
+  tony:{n:'Tony Hale',s:'Quirky and big-hearted',tags:['funny','heart','family'],read:'Tony Hale says weird and warm. Stories with heart under the jokes rise up.'},
+  neal:{n:'Neal McDonough',s:'Tough guy, soft heart',tags:['heart','thrill'],read:'Neal McDonough says grit with a soft center. Underdog stories get a bump.'},
+  levi:{n:'Zachary Levi',s:'Big kid at heart',tags:['funny','heart','adventure'],read:'Zachary Levi says you want fun with a big heart, maybe a redemption story.'},
+  woody:{n:'Woody Harrelson',s:'Wild stories, sharp mind',tags:['funny','learn'],read:'Woody Harrelson says smart and a little strange. Ideas with a wink.'},
+  kingsley:{n:'Ben Kingsley',s:'History over a cup of tea',tags:['learn','epic'],read:'Ben Kingsley says you’d take substance over popcorn. Big stories rank higher.'}
+};
+const BY_ID = Object.fromEntries(CATALOG.map(c=>[c.id,c]));
+/* Who's in the room. The host sets it; every suggestion, wildcard and bracket slot respects it. */
+const AUDIENCE = {
+  little:{n:'Little kids too',s:'Under 8 in the room',ok:['all'],label:'all ages'},
+  kids:{n:'Kids 8 and up',s:'Family-safe',ok:['all','kids'],label:'ages 8 and up'},
+  teens:{n:'Teens and up',s:'13+',ok:['all','kids','teen'],label:'ages 13 and up'},
+  adults:{n:'Grown-ups only',s:'Anything goes',ok:['all','kids','teen'],label:'grown-ups'}
+};
+const AGE_TAG = {all:'All ages',kids:'Ages 8+',teen:'Ages 13+'};
+const fits = item => { const a=AUDIENCE[(S.game&&S.game.audience)||'adults']; return !item.age || a.ok.includes(item.age); };
+const OCCASIONS = {
+  birthday:{n:'Birthday party',line:h=>h?`${h} is having a birthday party!`:'We’re having a birthday party!'},
+  sleepover:{n:'Sleepover',line:h=>h?`${h} is hosting a sleepover!`:'Sleepover tonight!'},
+  family:{n:'Family night',line:h=>h?`Family night with ${h}!`:'It’s family night!'},
+  neighborhood:{n:'Neighborhood night',line:h=>h?`${h} is hosting a neighborhood movie night!`:'Neighborhood movie night!'},
+  youth:{n:'Youth group',line:h=>h?`${h} is hosting youth group movie night!`:'Youth group movie night!'},
+  holiday:{n:'Holiday get-together',line:h=>h?`${h} is hosting a holiday movie night!`:'Holiday movie night!'}
+};
+
+/* Snack + road-trip questions. Each answer reads as a mood signal (tags), and the snack also picks a recipe if a write-in wins. */
+const SNACKS = {
+  popcorn:{n:'Buttery popcorn',s:'The classic',tags:['cozy','funny'],recipe:'brownbutter',read:'Classic popcorn says you want a crowd-pleaser, nothing risky.'},
+  candy:{n:'Sour gummies',s:'Sweet with a bite',tags:['funny','adventure','family'],recipe:'rainbow',read:'Sour gummies says playful. Fun beats serious tonight.'},
+  chips:{n:'Spicy chips',s:'Bring the heat',tags:['thrill','adventure'],recipe:'buffalo',read:'Spicy chips says you can handle some heat on screen too.'},
+  chocolate:{n:'Dark chocolate',s:'Comfort, but grown-up',tags:['heart','cry','inspire'],recipe:'smores',read:'Dark chocolate says comfort with some depth.'},
+  cheese:{n:'Cheese board',s:'A little fancy',tags:['learn','epic'],recipe:'bruschetta',read:'A cheese board says you’re in the mood for something with substance.'},
+  pizza:{n:'Pizza, obviously',s:'Feeds everyone',tags:['funny','family','adventure'],recipe:'pretzel',read:'Pizza says group-friendly. Something everyone can get into.'}
+};
+const DRINKS = {
+  dirtysoda:{n:'Dirty soda',s:'Coconut, lime, the works',tags:['funny','cozy'],recipe:'dirtysoda',read:'Dirty soda says you’re here for a good time, not a lecture.'},
+  cocoa:{n:'Hot cocoa',s:'Mug with both hands',tags:['cozy','heart'],recipe:'cocoa',read:'Hot cocoa says warm and comforting all the way.'},
+  float:{n:'Root beer float',s:'Feels like a kid again',tags:['funny','family'],recipe:'float',read:'A root beer float says nostalgic and fun.'},
+  coffee:{n:'Iced coffee',s:'Staying sharp',tags:['thrill','learn'],recipe:'coldbrew',read:'Iced coffee says you’re ready to pay attention. Twists welcome.'},
+  lemonade:{n:'Sparkling lemonade',s:'Bright and bubbly',tags:['inspire','adventure'],recipe:'lemonade',read:'Sparkling lemonade says upbeat and hopeful.'},
+  cider:{n:'Hot apple cider',s:'Fall in a mug',tags:['heart','cozy','epic'],recipe:'cider',read:'Hot cider says settle in for a story with some heart.'}
+};
+const PLAYLISTS = {
+  hiphop:{n:'Golden-era hip-hop',s:'Windows down',tags:['adventure','thrill','funny'],read:'Hip-hop on the road says you want energy and swagger.'},
+  poppunk:{n:'Pop-punk',s:'Yell every word',tags:['funny','thrill'],read:'Pop-punk says loud, fast, and a little ridiculous.'},
+  country:{n:'Country singalong',s:'Heart on the sleeve',tags:['heart','family'],read:'A country singalong says you’ll take a story with heart.'},
+  worship:{n:'Worship & gospel',s:'Lift it up',tags:['faith','inspire'],read:'Worship music says you want something that lifts you.'},
+  indie:{n:'Sad indie',s:'Rain on the windshield',tags:['cry','heart'],read:'Sad indie says you’re open to a good cry.'},
+  podcast:{n:'True-crime podcast',s:'Who did it?',tags:['learn','thrill'],read:'A true-crime podcast says real stories with tension pull you in.'},
+  scores:{n:'Movie soundtracks',s:'Epic orchestras',tags:['epic','adventure'],read:'Movie scores say you want something big.'},
+  silence:{n:'Total quiet',s:'Just the road',tags:['cozy','learn'],read:'Quiet on the road says calm and thoughtful wins tonight.'}
+};
+/* Recipes serve about 4. Quantities scale with the room. */
+const RECIPES = {
+  bruschetta:{n:'Tomato Basil Bruschetta',ing:[[1,'','baguette'],[4,'','Roma tomatoes, diced'],[1,'','garlic clove, minced'],[8,'','fresh basil leaves, sliced'],[3,'tbsp','olive oil'],[1,'tbsp','balsamic glaze'],[.5,'tsp','salt']],
+    steps:['Heat the oven to 400°F. Slice the baguette about ½ inch thick.','Brush slices with half the olive oil and toast 6 to 8 minutes, until golden.','Stir tomatoes, garlic, basil, salt and the rest of the oil. Let it sit 10 minutes.','Spoon onto the toasts and drizzle with balsamic glaze right before serving.']},
+  smores:{n:'Skillet S’mores Dip',ing:[[1,'tbsp','butter'],[6,'oz','chocolate chips'],[12,'','large marshmallows, halved'],[1,'sleeve','graham crackers']],
+    steps:['Heat the oven to 450°F. Butter a cast-iron skillet (8 inch for 4 people).','Spread chocolate chips in an even layer.','Cover with marshmallow halves, cut side down.','Bake 5 to 7 minutes until the tops are toasted. Watch it closely.','Serve hot with graham crackers for dipping. The pan stays hot, so use a mitt.']},
+  dates:{n:'Honey Pistachio Stuffed Dates',ing:[[12,'','Medjool dates'],[.25,'cup','goat cheese or cream cheese'],[2,'tbsp','honey'],[.25,'cup','pistachios, chopped'],[null,'','flaky salt, a pinch']],
+    steps:['Slit each date down one side and pull out the pit.','Fill each with about a teaspoon of cheese.','Drizzle with honey, then sprinkle pistachios and a little flaky salt.']},
+  texas:{n:'Texas Trash Snack Mix',ing:[[3,'cups','rice or corn Chex'],[1,'cup','mini pretzels'],[1,'cup','bagel chips'],[1,'cup','mixed nuts'],[6,'tbsp','butter, melted'],[2,'tbsp','Worcestershire sauce'],[1,'tsp','garlic powder'],[1,'tsp','seasoned salt'],[.25,'tsp','cayenne (optional)']],
+    steps:['Heat the oven to 250°F.','Whisk the melted butter, Worcestershire and seasonings.','Toss with everything else in a big bowl until coated.','Spread on a sheet pan and bake 45 minutes, stirring every 15.','Cool 10 minutes so it crisps up.']},
+  energy:{n:'No-Bake Energy Bites',ing:[[1,'cup','old-fashioned oats'],[.5,'cup','peanut butter'],[.33,'cup','honey'],[.5,'cup','mini chocolate chips'],[1,'tsp','vanilla']],
+    steps:['Stir everything together in a bowl.','Chill 20 minutes so it firms up.','Roll into 1-inch balls. Makes about 16. Keep them cold until the movie starts.']},
+  brownbutter:{n:'Brown Butter Popcorn',ing:[[.5,'cup','popcorn kernels'],[2,'tbsp','neutral oil'],[4,'tbsp','butter'],[1,'tsp','fine salt'],[1,'tsp','sugar (optional)']],
+    steps:['Pop the kernels in the oil in a covered pot over medium-high, shaking often. Pull it off when popping slows to 2 seconds apart.','Melt the butter in a small pan over medium. Swirl 3 to 4 minutes until it smells nutty and turns amber.','Pour over the popcorn, add salt and sugar, and toss right away.']},
+  rainbow:{n:'Monster Rainbow Popcorn',ing:[[10,'cups','popped popcorn'],[1,'cup','white chocolate melts'],[3,'','gel food colors'],[.25,'cup','sprinkles'],[.5,'cup','sour gummies, chopped']],
+    steps:['Spread the popcorn on a parchment-lined sheet pan.','Melt the white chocolate in 30-second bursts, stirring between.','Split it into 3 bowls and tint each a different color.','Drizzle each color over the popcorn, then add sprinkles and gummies.','Let it set 15 minutes, then break into clusters.']},
+  pretzel:{n:'Soft Pretzel Bites',ing:[[1,'lb','pizza dough'],[8,'cups','water'],[.33,'cup','baking soda'],[1,'','egg, beaten'],[null,'','coarse salt'],[.5,'cup','honey mustard or cheese dip']],
+    steps:['Heat the oven to 425°F and line a sheet pan with parchment.','Roll the dough into ropes and cut into 1-inch pieces.','Bring the water and baking soda to a boil. Drop pieces in for 30 seconds, then lift out.','Brush with egg, sprinkle with salt, and bake 12 to 14 minutes until deep brown.','Serve warm with the dip.']},
+  buffalo:{n:'Buffalo Ranch Popcorn',ing:[[10,'cups','popped popcorn'],[4,'tbsp','butter'],[3,'tbsp','hot sauce'],[1,'tbsp','dry ranch seasoning'],[.5,'tsp','garlic powder']],
+    steps:['Heat the oven to 300°F.','Melt the butter and stir in the hot sauce and garlic powder.','Pour over the popcorn, toss, then sprinkle the ranch seasoning and toss again.','Spread on a sheet pan and bake 8 minutes so it dries crisp.']},
+  apples:{n:'Caramel Apple Nachos',ing:[[3,'','crisp apples, thinly sliced'],[1,'tbsp','lemon juice'],[.75,'cup','caramel dip, warmed'],[.33,'cup','crushed pretzels'],[.25,'cup','mini chocolate chips']],
+    steps:['Toss apple slices with lemon juice so they don’t brown.','Fan them out on a platter.','Drizzle with warm caramel, then scatter pretzels and chocolate chips on top.']},
+  trail:{n:'Expedition Trail Mix',ing:[[1,'cup','roasted almonds'],[1,'cup','mini pretzels'],[.5,'cup','dried cherries'],[.5,'cup','M&Ms'],[.5,'cup','sunflower seeds']],
+    steps:['Toss everything in a big bowl.','Split into cups or bags so nobody has to reach across the couch.']},
+  edamame:{n:'Garlic Sesame Edamame',ing:[[2,'cups','frozen edamame in pods'],[1,'tbsp','sesame oil'],[1,'tbsp','soy sauce'],[1,'tsp','fresh ginger, grated'],[1,'','garlic clove, minced'],[1,'tsp','sesame seeds']],
+    steps:['Boil the edamame 4 to 5 minutes, then drain.','Warm the sesame oil in a skillet, add garlic and ginger, and stir 30 seconds.','Add the edamame and soy sauce and toss 1 minute.','Finish with sesame seeds. Set out an empty bowl for the pods.']}
+};
+Object.assign(RECIPES, {
+  dirtysoda:{n:'Coconut Lime Dirty Dr Pepper',ing:[[4,'cans','Dr Pepper (12 oz)'],[4,'tbsp','coconut syrup'],[4,'tbsp','coconut creamer'],[2,'','limes, cut in wedges'],[null,'','pebble ice']],
+    steps:['Fill 4 big cups with pebble ice.','Add 1 tbsp coconut syrup and a squeeze of lime to each cup.','Pour in the soda slowly so it doesn’t foam over.','Float 1 tbsp creamer on top and add a lime wedge.']},
+  cocoa:{n:'Stovetop Hot Cocoa',ing:[[4,'cups','milk'],[.33,'cup','cocoa powder'],[.33,'cup','sugar'],[.5,'cup','chocolate chips'],[1,'tsp','vanilla'],[null,'','pinch of salt'],[null,'','marshmallows for topping']],
+    steps:['Whisk cocoa, sugar, salt and 1 cup of the milk in a pot over medium until smooth.','Add the rest of the milk and the chocolate chips. Heat, stirring, until steaming. Don’t let it boil.','Stir in vanilla, pour into mugs, and top with marshmallows.']},
+  float:{n:'Classic Root Beer Floats',ing:[[4,'cans','root beer (12 oz)'],[8,'scoops','vanilla ice cream']],
+    steps:['Put mugs or glasses in the freezer for 10 minutes if you have time.','Add 2 scoops of ice cream to each.','Pour the root beer slowly down the side. Serve with a spoon and a straw.']},
+  coldbrew:{n:'Iced Vanilla Cold Brew',ing:[[3,'cups','cold brew (decaf works)'],[1,'cup','milk or oat milk'],[3,'tbsp','vanilla syrup'],[null,'','ice']],
+    steps:['Fill 4 glasses with ice.','Split the cold brew between them.','Stir the vanilla syrup into the milk, then pour over the top.']},
+  lemonade:{n:'Sparkling Strawberry Lemonade',ing:[[1,'cup','strawberries, hulled'],[.5,'cup','fresh lemon juice'],[.33,'cup','sugar or honey'],[3,'cups','sparkling water, chilled'],[null,'','ice and mint']],
+    steps:['Blend strawberries, lemon juice and sugar until smooth.','Split the mix between 4 glasses of ice.','Top with sparkling water, stir gently, and add a mint sprig.']},
+  cider:{n:'Hot Spiced Apple Cider',ing:[[6,'cups','apple cider'],[2,'','cinnamon sticks'],[4,'','whole cloves'],[1,'','orange, sliced'],[2,'tbsp','brown sugar (optional)']],
+    steps:['Add everything to a pot.','Bring to a simmer over medium, then turn to low for 15 minutes.','Ladle into mugs, leaving the cloves behind.']},
+  minttea:{n:'Honey Mint Iced Tea',ing:[[4,'cups','water'],[4,'','tea bags (black or herbal)'],[.25,'cup','honey'],[1,'handful','fresh mint'],[1,'','lemon, sliced'],[null,'','ice']],
+    steps:['Bring the water to a boil, take it off the heat, and steep the tea and mint for 5 minutes.','Remove the bags, stir in honey until dissolved.','Pour over plenty of ice and add lemon slices.']}
+});
+const DRINK_PAIR_NEW = {
+  stillhope:'cocoa', guarded:'coldbrew', youngwarriors:'lemonade', mary4mayor:'lemonade', philwickham:'lemonade', testament:'minttea',
+  pettymurphy:'dirtysoda', turnersparks:'dirtysoda', michaelyo:'dirtysoda', robschneider:'dirtysoda', shaynesmith:'dirtysoda',
+  notashamed:'cocoa', persephone:'minttea', spacebetween:'cider', threadbound:'cocoa', redemptionriver:'lemonade', fivemilecave:'float',
+  godscompass:'minttea', elva:'cider', secondgreatest:'float', hecallsme:'cocoa', christianmingle:'italiansoda', smokies:'cocoa',
+  andrewpacker:'dirtysoda', chrisclarke:'dirtysoda', moniquemarvez:'dirtysoda'
+};
+const DRINK_PAIR = {
+  sof:['coldbrew','You’ll want to stay sharp for this one.'],
+  onlyson:['minttea','Something cool for a desert journey.'], cabrini:['italiansoda','Italian roots.'],
+  bonhoeffer:['cider','Warm and spiced for a German winter story.'], kingofkings:['cocoa','A storytime classic.'],
+  david:['minttea','Cool and simple for the shepherd’s field.'], sketch:['float','Pure kid-at-heart energy.'],
+  lastrodeo:['lemonade','Rodeo-stand lemonade, with sparkle.'], truthtreason:['cider','Something warm for a cold, tense story.'],
+  possumtrot:['lemonade','Texas porch lemonade.'], homestead:['cider','Off-grid comfort in a mug.'],
+  wingfeather:['cocoa','Fireside fuel for a fantasy quest.'], tuttle:['float','A float for a fast, silly ride.'],
+  drybar:['dirtysoda','A Utah comedy night drink.'], solomio:['italiansoda','A soda from the Italian honeymoon.'],
+  animalfarm:['cider','Pressed from the farm’s own orchard.'], youngwash:['cider','A colonial staple, minus the hard part.'],
+  runner:['coldbrew','You won’t be sleeping through this one.'], badman:['float','A sarsaparilla nod to the old West.'],
+  sight:['minttea','Calm and clear.'], afterdeath:['cocoa','Something warm while the big questions settle in.'],
+  theshift:['coldbrew','Stay alert. This one twists.'], wayfinders:['cocoa','Fireside fuel for a fantasy quest.']
+};
+RECIPES.italiansoda={n:'Italian Cream Soda',ing:[[4,'cups','sparkling water, chilled'],[.5,'cup','raspberry or vanilla syrup'],[.25,'cup','half-and-half'],[null,'','ice and whipped cream']],
+  steps:['Fill 4 glasses with ice and add 2 tbsp syrup to each.','Top with sparkling water.','Drizzle 1 tbsp half-and-half into each and finish with whipped cream.']};
+const PAIRING_NEW = {
+  stillhope:['brownbutter','Simple and comforting for a heavy story.'], guarded:['buffalo','A little heat for a show full of secrets.'],
+  youngwarriors:['trail','Something easy to pass around.'], mary4mayor:['bruschetta','Small-town campaign party food.'],
+  philwickham:['brownbutter','Concert popcorn. Sing between handfuls.'], testament:['dates','First-century flavors for the Book of Acts.'],
+  pettymurphy:['brownbutter','Comedy club popcorn, upgraded.'], turnersparks:['brownbutter','Comedy club popcorn, upgraded.'],
+  michaelyo:['brownbutter','Comedy club popcorn, upgraded.'], robschneider:['brownbutter','Comedy club popcorn, upgraded.'],
+  shaynesmith:['buffalo','Deadpan comedy, spicy popcorn.'], notashamed:['brownbutter','Simple and comforting for a heavy story.'],
+  persephone:['apples','English-orchard flavors for a Regency romance.'], spacebetween:['smores','Comfort food for a hard conversation.'],
+  threadbound:['trail','Easy snacks for a quiet, thoughtful watch.'], redemptionriver:['trail','River-trip trail mix.'],
+  fivemilecave:['smores','Campfire dessert for a frontier tale.'], godscompass:['texas','Southern snack mix for a Southern story.'],
+  elva:['apples','Farm-stand flavors for a Mennonite story.'], secondgreatest:['texas','A crowd-pleasing snack mix.'],
+  hecallsme:['dates','Something sweet for a tender watch.'], christianmingle:['bruschetta','Date-night bruschetta.'],
+  smokies:['apples','Mountain-orchard flavors for a Smoky Mountain Christmas.'],
+  andrewpacker:['brownbutter','Comedy club popcorn, upgraded.'], chrisclarke:['brownbutter','Comedy club popcorn, upgraded.'], moniquemarvez:['brownbutter','Comedy club popcorn, upgraded.']
+};
+const PAIRING = {
+ 
+  sof:['buffalo','Something with heat for a tense one.'],
+  onlyson:['dates','A desert snack for a desert journey.'],
+  cabrini:['bruschetta','Italian roots, New York hustle.'],
+  bonhoeffer:['pretzel','A German classic for a German story.'],
+  kingofkings:['dates','Simple, sweet and ancient, like the story.'],
+  david:['dates','Shepherd food: dates, honey and nuts.'],
+  sketch:['rainbow','As colorful as the monsters in the notebook.'],
+  lastrodeo:['smores','Campfire dessert for a cowboy story.'],
+  truthtreason:['pretzel','A Bavarian staple to go with the story’s setting.'],
+  possumtrot:['texas','A Texas snack mix for an East Texas story.'],
+  homestead:['trail','Prepper-approved and shelf-stable.'],
+  wingfeather:['trail','Fuel for a long quest.'],
+  tuttle:['brownbutter','Popcorn that’s a little smarter than usual.'],
+  drybar:['brownbutter','Comedy club popcorn, upgraded.'],
+  solomio:['bruschetta','An Italian honeymoon, minus the groom.'],
+  animalfarm:['apples','Straight from the orchard, before the pigs take over.'],
+  youngwash:['apples','Colonial orchard flavors.'],
+  runner:['energy','Grab-and-go fuel for a race against the clock.'],
+  badman:['smores','Campfire dessert for a western.'],
+  sight:['edamame','A nod to the film’s Chinese roots.'],
+  afterdeath:['brownbutter','Simple and easy, so the conversation can take over.'],
+  theshift:['buffalo','Heat for a story that keeps turning up the pressure.'],
+  wayfinders:['trail','Quest fuel for a fantasy adventure.']
+};
+const Q = [
+  {key:'vibe', q:'How’s your energy right now?', multi:false, opts:[
+    ['drained','Running on empty','Long day'],['cozy','Cozy, blanket mode','Snacks are ready'],
+    ['restless','Restless','Need a jolt'],['fired','Fired up','Bring the big stuff'],
+    ['feels','In my feels','A little tender'],['goofy','Goofy','Everything is funny']]},
+  {key:'want', q:'What should tonight’s pick do to you?', multi:false, opts:[
+    ['funny','Make me laugh',''],['cry','A good cry',''],['thrill','Get my pulse up',''],
+    ['learn','Teach me something real',''],['inspire','Lift me up',''],['adventure','Take me somewhere else','']]},
+  {key:'actor', q:'Out of these, who would you most want to hang out with?', sub:'Go with your gut. It tells us more than you’d think.', multi:false, optional:true, opts:
+    Object.entries(ACTORS).map(([k,a])=>[k,a.n,a.s])},
+  {key:'len', q:'How much time do we have?', multi:false, opts:[
+    ['short','An episode or a special','Under an hour'],['movie','A regular movie','About two hours'],['any','We’ve got all night','Epics welcome']]},
+  {key:'snack', q:'Pick a snack. Go.', sub:'This one matters more than you’d think.', multi:false, optional:true, opts:
+    Object.entries(SNACKS).map(([k,v])=>[k,v.n,v.s])},
+  {key:'drink', q:'And to drink?', sub:'All alcohol-free.', multi:false, optional:true, opts:
+    Object.entries(DRINKS).map(([k,v])=>[k,v.n,v.s])},
+  {key:'playlist', q:'Road trip. What’s playing?', multi:false, optional:true, opts:
+    Object.entries(PLAYLISTS).map(([k,v])=>[k,v.n,v.s])},
+  {key:'genres', q:'Any genres you’re craving?', sub:'Pick up to 3, or skip.', multi:3, opts:[
+    ['comedy','Comedy',''],['drama','Drama',''],['thriller','Thriller & Action',''],['family','Animation & Family',''],
+    ['true','True Story & History',''],['faith','Faith',''],['docs','Docs & Unscripted','']]}
+];
+const VIBE_TAGS = {drained:['funny','cozy','family'],cozy:['heart','family','cozy'],restless:['thrill','adventure'],fired:['epic','inspire','thrill'],feels:['cry','heart'],goofy:['funny','family']};
+const VIBE_RANGE = {drained:[1,2],cozy:[1,3],restless:[3,5],fired:[3,5],feels:[2,4],goofy:[1,2]};
+const WANT_AVOID = {funny:5, adventure:6};  /* wanting a laugh or an escape: heavy titles (intensity >= value) get pushed down */
+const VIBE_READ = {
+  drained:'You’re running on empty, so we’ll lean easy to follow and low effort.',
+  cozy:'Blanket mode detected. Warm stories rise to the top.',
+  restless:'You want a jolt. Slow burns get pushed down the list.',
+  fired:'You’ve got energy to spare. Big swings are on the table.',
+  feels:'You’re tender tonight. We’ll find something that hits the heart without wrecking you.',
+  goofy:'Everything’s funny right now. We’ll protect that.'};
+const WANT_WORD = {funny:'laugh',cry:'have a good cry',thrill:'get their pulse up',learn:'learn something',inspire:'feel lifted',adventure:'escape'};
+const VIBE_WORD = {drained:'running on empty',cozy:'in cozy mode',restless:'restless',fired:'fired up',feels:'in their feels',goofy:'feeling goofy'};
+const BOT_NAMES = ['Grandma Jo','Uncle Rick','Skye','Mo','Tess','Dez','Pops','Lulu'];
+const AV_COLORS = ['#FFC145','#FF6F59','#5CE1B0','#9CB8FF','#F49CFF','#FFE08A','#8EF0D0','#FFA48F'];
+const MAX_NOMS = 3;
+
+
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rid = (n=10) => Array.from(crypto.getRandomValues(new Uint8Array(n)),b=>'abcdefghijkmnpqrstuvwxyz23456789'[b%32]).join('');
+const hash = s => { let h=2166136261; for (const c of String(s)) { h^=c.charCodeAt(0); h=Math.imul(h,16777619);} return h>>>0; };
+const clone = o => o==null ? o : JSON.parse(JSON.stringify(o));
+const isObj = v => v && typeof v==='object' && !Array.isArray(v);
+function merge(a,b){ for (const k in b){ if (isObj(b[k]) && isObj(a[k])) merge(a[k],b[k]); else a[k]=clone(b[k]); } return a; }
+function lsGet(k){ try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
+function lsSet(k,v){ try { localStorage.setItem(k,JSON.stringify(v)); } catch {} }
+let toastT; function toast(msg){ const t=$('#toast'); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true,3200); }
+const avColor = id => AV_COLORS[hash(id)%AV_COLORS.length];
+const initials = n => (n||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+
+/* ---------- local stand-in store (used when this view can't sync) ---------- */
+function makeLocalDB(){
+  const store=new Map(), subs=new Set(); let queued=false;
+  const notify=()=>{ if(queued) return; queued=true; setTimeout(()=>{ queued=false; subs.forEach(f=>f()); },0); };
+  const snap=p=>{ const d=store.get(p); return {id:p.split('/').pop(),exists:!!d,data:()=>d&&clone(d)}; };
+  const docRef=p=>({path:p,id:p.split('/').pop(),
+    get:async()=>snap(p), set:async d=>{store.set(p,clone(d));notify();},
+    update:async d=>{const c=store.get(p); if(!c) throw {code:'invalid_argument',message:'missing'}; store.set(p,merge(clone(c),d)); notify();},
+    delete:async()=>{store.delete(p);notify();},
+    onSnapshot(fn){const f=()=>fn(snap(p)); subs.add(f); setTimeout(f,0); return ()=>subs.delete(f);},
+    collection:c=>colRef(p+'/'+c)});
+  const colRef=cp=>({path:cp, doc:id=>docRef(cp+'/'+(id||rid())),
+    onSnapshot(fn){const depth=cp.split('/').length+1; const f=()=>{const docs=[...store.keys()].filter(k=>k.startsWith(cp+'/')&&k.split('/').length===depth).sort().map(snap); fn({docs,size:docs.length,empty:!docs.length});}; subs.add(f); setTimeout(f,0); return ()=>subs.delete(f);}});
+  return {doc:docRef, collection:colRef};
+}
+
+/* ---------- app state ---------- */
+const S = {
+  mode:'local', db:makeLocalDB(), me:{id:null,name:''},
+  code:null, game:null, players:[], unsubs:[],
+  ui:{screen:'home', name:lsGet('wswt-name')||'', expected:4, guild:false, audience:'kids', party:false, occasion:'birthday', honoree:'', when:'', email:'', emailOk:false, joinCode:'', qi:0, ans:{genres:[]}, deck:0, passed:[], custom:'', voted:{}},
+  host:{busy:false, botTimers:new Set()}
+};
+const writeQ = new Map();
+function write(path, op, data){
+  const prev = writeQ.get(path)||Promise.resolve();
+  const next = prev.catch(()=>{}).then(()=>S.db.doc(path)[op](data)).catch(e=>{
+    toast(S.mode==='live' ? 'That didn’t save. Ask the host to share this page with you as a Contributor.' : 'Something went wrong saving that.');
+    throw e;
+  });
+  writeQ.set(path,next); return next;
+}
+const gamePath = () => 'games/'+S.code;
+const myPath = () => gamePath()+'/players/'+S.me.id;
+const meP = () => S.players.find(p=>p.id===S.me.id);
+const isHost = () => S.game && S.game.host===S.me.id;
+const humans = () => S.players;
+
+/* ---------- scoring ---------- */
+function score(item, a){ return scoreParts(item,a).total; }
+function scoreParts(item, a){
+  const p={genre:0,want:0,vibe:0,feel:0,len:0,actor:0,taste:0,total:0};
+  if(!a) return p;
+  const tagW = t => { const i=item.tags.indexOf(t); return i<0?0:(i===0?1:.6); };   /* first tag is what the title is mostly about */
+  p.genre = Math.min(2,item.g.filter(g=>(a.genres||[]).includes(g)).length)*2.5;
+  p.want = 4*tagW(a.want);
+  p.vibe = 1.2*(VIBE_TAGS[a.vibe]||[]).reduce((s,t)=>s+tagW(t),0);
+  const r=VIBE_RANGE[a.vibe];
+  if(r){ const off = item.i<r[0] ? r[0]-item.i : item.i>r[1] ? item.i-r[1] : 0; p.feel = off ? -1.8*off : 1; }
+  if(a.want in WANT_AVOID && item.i>=WANT_AVOID[a.want]) p.feel -= 2;
+  if (a.len==='short') p.len = item.len==='short'?2:(item.len==='epic'?-2:0);
+  if (a.len==='movie') p.len = item.len==='movie'?1.5:(item.len==='short'?.5:-1);
+  if (a.len==='any' && item.len==='epic') p.len=.5;
+  const act=ACTORS[a.actor];
+  if(act){ if(item.cast.includes(act.n)) p.actor+=3; p.actor += .8*act.tags.reduce((s,t)=>s+tagW(t),0); }
+  p.taste = 0;
+  [SNACKS[a.snack],DRINKS[a.drink],PLAYLISTS[a.playlist]].forEach(x=>{ if(x) p.taste += .6*x.tags.reduce((s,t)=>s+tagW(t),0); });
+  p.total = p.genre+p.want+p.vibe+p.feel+p.len+p.actor+p.taste + (hash(item.id+(a.vibe||''))%100)/1000;
+  return p;
+}
+function maxScore(a){ return ((a.genres||[]).length?5:0) + 4 + 1.2*2.2 + 1 + 2 + (ACTORS[a.actor]?3+.8*2.2:0) + (SNACKS[a.snack]?.6*1.8:0) + (PLAYLISTS[a.playlist]?.6*1.8:0) + (DRINKS[a.drink]?.6*1.8:0); }
+const matchPct = (item,a) => Math.max(5,Math.min(99,Math.round(100*score(item,a)/maxScore(a))));
+const groupScore = id => BY_ID[id] ? S.players.reduce((s,p)=>s+score(BY_ID[id],p.answers),0) : 0;
+function suggestionsFor(a){ return CATALOG.filter(fits).map(c=>({c,s:score(c,a)})).sort((x,y)=>y.s-x.s).map(x=>x.c); }
+function whyLine(item,a){
+  const p=scoreParts(item,a), bits=[], act=ACTORS[a.actor];
+  if(item.unverified) return 'New on Angel. We\u2019ll know more about this one soon.';
+  if (act && item.cast.includes(act.n)) bits.push('stars '+act.n+', your hangout pick');
+  const MAIN={funny:'made to make you laugh',cry:'built for a good cry',thrill:'gets your pulse up',learn:'teaches you something real',inspire:'built to lift you up',adventure:'takes you somewhere else'};
+  const SOME={funny:'has real laughs in it',cry:'will get you misty',thrill:'has real tension',learn:'teaches you something along the way',inspire:'leaves you lifted',adventure:'has a sense of escape'};
+  if (p.want>=4) bits.push(MAIN[a.want]); else if (p.want>0) bits.push(SOME[a.want]);
+  if (p.genre) bits.push('matches your genre pick');
+  if (p.feel>0) bits.push(item.i<=2?'light enough for how you feel':'the right weight for your mood');
+  if (a.len==='short' && item.len==='short') bits.push('fits a short window');
+  return bits.length ? 'Why: '+bits.slice(0,3).join(', ')+'.' : 'A wildcard. Not a close match, but worth a look.';
+}
+function roomRead(){
+  const ps=S.players.filter(p=>p.answers); if(!ps.length) return '';
+  const top=(k)=>{const c={}; ps.forEach(p=>c[p.answers[k]]=(c[p.answers[k]]||0)+1); return Object.entries(c).sort((a,b)=>b[1]-a[1])[0];};
+  const [w,wn]=top('want'), [v,vn]=top('vibe');
+  return `Room read: ${wn} of ${ps.length} want to ${WANT_WORD[w]}. ${vn>1?vn+' of you are':'One of you is'} ${VIBE_WORD[v]}.`;
+}
+
+/* ---------- poster ---------- */
+function poster(e, extra=''){
+  const h=hash(e.id||e.t)%360, h2=(h+50)%360;
+  const kind = e.custom ? 'Write-in' : (e.k||'Movie');
+  const art = ART.titles[e.id];
+  const bg = art ? `background:#0d0a1c url('${blob(art)}') center/cover no-repeat` : `background:linear-gradient(155deg,hsl(${h} 70% 52%),hsl(${h2} 65% 28%) 70%,hsl(${h2} 60% 16%))`;
+  return `<div class="poster${art?' has-art':''}" style="${bg}">
+    <span class="kind">${esc(kind)}</span>${e.age||(BY_ID[e.id]&&BY_ID[e.id].age)?`<span class="agechip">${AGE_TAG[e.age||BY_ID[e.id].age]}</span>`:''}<div class="pt">${esc(e.t)}</div>
+    <div class="py">${e.y?esc(e.y):''}${(BY_ID[e.id]&&BY_ID[e.id].guild)?' \u00b7 <span class="gchip">Guild</span>':''}${extra}</div></div>`;
+}
+
+/* ---------- art: poster images and people photos ----------
+   Uploaded by the page owner (Art manager). Stored as asset ids in db docs art/titles and art/people. */
+const ART = {titles:{}, people:{}};
+const slug = n => String(n).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const blob = id => '/_blob/'+encodeURIComponent(id);
+function personAvatar(name, size=34){
+  const id=ART.people[slug(name)];
+  return id ? `<img class="face" src="${blob(id)}" alt="${esc(name)}" width="${size}" height="${size}" loading="lazy" style="width:${size}px;height:${size}px">`
+            : `<span class="face" style="width:${size}px;height:${size}px;background:${avColor(name)};font-size:${Math.round(size*.38)}px" aria-hidden="true">${esc(initials(name))}</span>`;
+}
+function castRow(item, max=3){
+  if(!item||!item.cast||!item.cast.length) return '';
+  return `<div class="cast">${item.cast.slice(0,max).map(n=>`<span class="castp">${personAvatar(n)}<span>${esc(n)}</span></span>`).join('')}</div>`;
+}
+function watchArtFrom(db){ ['titles','people'].forEach(k=>db.doc('art/'+k).onSnapshot(sn=>{ ART[k]=sn.exists?(sn.data()||{}):{}; render(); },()=>{})); }
+function watchArt(){
+  if(S.artUnsubs) S.artUnsubs.forEach(u=>u());
+  S.artUnsubs=['titles','people'].map(k=>S.db.doc('art/'+k).onSnapshot(sn=>{ ART[k]= sn.exists ? (sn.data()||{}) : {}; render(); },()=>{}));
+}
+
+/* ---------- connect to a game ---------- */
+function subscribe(code){
+  S.unsubs.forEach(u=>u()); S.unsubs=[];
+  S.code=code; S.game=null; S.players=[];
+  lsSet('wswt-session',{code, mode:S.mode});
+  S.unsubs.push(S.db.doc('games/'+code).onSnapshot(sn=>{
+    if(!sn.exists){ if(S.game){ toast('That game ended.'); leave(); } return; }
+    S.game=sn.data(); afterChange();
+  }, ()=>{}));
+  S.unsubs.push(S.db.collection('games/'+code+'/players').onSnapshot(qs=>{
+    S.players=qs.docs.filter(d=>d.exists).map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.joinedAt||0)-(b.joinedAt||0));
+    afterChange();
+  }, ()=>{}));
+}
+function leave(){ S.unsubs.forEach(u=>u()); S.unsubs=[]; S.code=null; S.game=null; S.players=[]; lsSet('wswt-session',null);
+  Object.assign(S.ui,{screen:'home',qi:0,ans:{genres:[]},deck:0,passed:[],custom:'',voted:{}}); render(); }
+function afterChange(){
+  const st=S.game&&S.game.stage;
+  if(st!==S.ui.lastStage){ S.ui.lastStage=st; if(st==='mood'||st==='lobby') Object.assign(S.ui,{qi:0,ans:{genres:[]},deck:0,custom:'',voted:{}}); }
+  if(isHost()) hostTick(); render();
+}
+
+async function createGame(){
+  const name=S.ui.name.trim(); if(!name){ toast('Add your name first.'); return; }
+  if(!S.ui.guild){ toast('Hosting comes with the Angel Guild. Anyone can join a night with a code.'); return; }
+  lsSet('wswt-name',name);
+  let code; for(let i=0;i<6;i++){ code=Array.from({length:4},()=> 'ABCDEFGHJKLMNPQRSTUVWXYZ'[Math.floor(Math.random()*24)]).join(''); const s=await S.db.doc('games/'+code).get(); if(!s.exists) break; }
+  await write('games/'+code,'set',{host:S.me.id, hostName:name, hostGuild:true, expected:S.ui.expected, audience:S.ui.audience, party: S.ui.party ? {occasion:S.ui.occasion, honoree:S.ui.honoree.trim().slice(0,30), when:S.ui.when.trim().slice(0,40)} : null, stage:'lobby', createdAt:Date.now()});
+  await write('games/'+code+'/players/'+S.me.id,'set',{name, joinedAt:Date.now(), done:{}, votes:{}, noms:[], customs:[]});
+  subscribe(code);
+}
+async function joinGame(){
+  const name=S.ui.name.trim(), code=S.ui.joinCode.trim().toUpperCase();
+  if(!name){ toast('Add your name first.'); return; }
+  if(!/^[A-Z]{4}$/.test(code)){ toast('Codes are 4 letters.'); return; }
+  lsSet('wswt-name',name);
+  const g=await S.db.doc('games/'+code).get().catch(()=>null);
+  if(!g||!g.exists){ toast(`No game found for ${code}. Double-check the letters with your host.`); return; }
+  const mine=await S.db.doc('games/'+code+'/players/'+S.me.id).get();
+  if(!mine.exists) await write('games/'+code+'/players/'+S.me.id,'set',{name, joinedAt:Date.now(), done:{}, votes:{}, noms:[], customs:[]});
+  subscribe(code);
+}
+
+/* ---------- host logic ---------- */
+const allDone = k => S.players.length>0 && S.players.every(p=>p.done&&p.done[k]);
+function hostTick(){
+  const g=S.game; if(!g||S.host.busy) return;
+  if(g.stage==='mood' && allDone('mood')) return hostWrite({stage:'nominate'});
+  if(g.stage==='nominate' && allDone('nominate')) return hostWrite(buildBracket());
+  if(g.stage==='bracket' && !g.pending){
+    const key=curKey(); if(S.players.every(p=>p.votes&&p.votes[key])) resolveMatch();
+  }
+  runBots();
+}
+async function hostWrite(data){ S.host.busy=true; try{ await write(gamePath(),'update',data); } finally { S.host.busy=false; } }
+
+function buildBracket(){
+  const entries={};
+  S.players.forEach(p=>{
+    (p.noms||[]).forEach(id=>{ const c=BY_ID[id]; if(!c||!fits(c)) return; entries[id]=entries[id]||{id,t:c.t,y:c.y,k:c.k,age:c.age,by:[]}; entries[id].by.push(p.name); });
+    (p.customs||[]).forEach(c=>{ entries[c.id]=entries[c.id]||{id:c.id,t:c.t,custom:true,by:[]}; if(!entries[c.id].by.includes(p.name)) entries[c.id].by.push(p.name); });
+  });
+  const rank=id=>entries[id].by.length*4+groupScore(id)+(entries[id].custom?3:0);
+  let ids=Object.keys(entries).sort((a,b)=>rank(b)-rank(a));
+  const size = ids.length<=4 ? 4 : 8;
+  ids=ids.slice(0,size);
+  const wild=CATALOG.filter(fits).map(c=>c.id).filter(id=>!entries[id]).sort((a,b)=>groupScore(b)-groupScore(a));
+  if(!wild.length) wild.push(...CATALOG.filter(c=>c.age==='all').map(c=>c.id).filter(id=>!entries[id]));
+  while(ids.length<size){ const id=wild.shift(); const c=BY_ID[id]; entries[id]={id,t:c.t,y:c.y,k:c.k,age:c.age,by:[],wild:true}; ids.push(id); }
+  const order = size===8 ? [0,7,3,4,1,6,2,5] : [0,3,1,2];
+  return {stage:'bracket', entries, rounds:[order.map(i=>ids[i])], cur:{r:0,m:0}, pending:false, lastResult:null};
+}
+const curKey = () => S.game&&S.game.cur ? `r${S.game.cur.r}m${S.game.cur.m}` : '';
+function matchup(){ const g=S.game, {r,m}=g.cur; return [g.rounds[r][2*m], g.rounds[r][2*m+1]]; }
+function tally(key,pair){ const t={[pair[0]]:0,[pair[1]]:0}; S.players.forEach(p=>{ const v=p.votes&&p.votes[key]; if(v in t) t[v]++; }); return t; }
+async function resolveMatch(){
+  const g=S.game, key=curKey(), pair=matchup(), t=tally(key,pair);
+  let w = t[pair[0]]>t[pair[1]] ? pair[0] : t[pair[1]]>t[pair[0]] ? pair[1] : null;
+  let tie=false;
+  if(!w){ tie=true; const a=groupScore(pair[0])+(g.entries[pair[0]].by.length), b=groupScore(pair[1])+(g.entries[pair[1]].by.length); w = a===b ? pair[Math.random()<.5?0:1] : (a>b?pair[0]:pair[1]); }
+  await hostWrite({pending:true, lastResult:{key, winner:w, tally:t, tie}});
+  setTimeout(()=>advance(w), 2200);
+}
+async function advance(w){
+  const g=clone(S.game); if(!g||g.stage!=='bracket') return;
+  const {r,m}=g.cur; const rounds=g.rounds;
+  rounds[r+1]=rounds[r+1]||[]; rounds[r+1][m]=w;
+  let cur;
+  if(m+1 < rounds[r].length/2) cur={r,m:m+1};
+  else if(rounds[r+1].length===1){ await hostWrite({rounds, stage:'winner', winner:w, pending:false}); return; }
+  else cur={r:r+1,m:0};
+  await hostWrite({rounds, cur, pending:false, lastResult:null});
+}
+async function forceAdvance(){
+  const g=S.game; if(!g) return;
+  if(g.stage==='mood') hostWrite({stage:'nominate'});
+  else if(g.stage==='nominate') hostWrite(buildBracket());
+  else if(g.stage==='bracket' && !g.pending) resolveMatch();
+}
+
+/* bots: host-driven test friends */
+async function addBot(){
+  S.host.botNames=S.host.botNames||new Set();
+  const used=new Set([...S.players.map(p=>p.name),...S.host.botNames]); const name=BOT_NAMES.find(n=>!used.has(n))||('Guest '+(used.size+1));
+  S.host.botNames.add(name);
+  const id='bot-'+rid(6);
+  await write(gamePath()+'/players/'+id,'set',{name, bot:true, joinedAt:Date.now(), done:{}, votes:{}, noms:[], customs:[]});
+}
+function botOnce(key, ms, fn){ if(S.host.botTimers.has(key)) return; S.host.botTimers.add(key); setTimeout(fn, ms); }
+function runBots(){
+  const g=S.game; if(!g) return;
+  S.players.filter(p=>p.bot).forEach(b=>{
+    const path=gamePath()+'/players/'+b.id, wait=800+Math.random()*2200;
+    if(g.stage==='mood' && !b.done?.mood) botOnce(b.id+':mood', wait, ()=>{
+      const qk=k=>Q.find(q=>q.key===k), pick=k=>{const o=qk(k).opts; return o[Math.floor(Math.random()*o.length)][0];};
+      const genres=[pick('genres')]; if(Math.random()<.5) genres.push(pick('genres'));
+      write(path,'update',{answers:{vibe:pick('vibe'),want:pick('want'),len:pick('len'),actor:pick('actor'),snack:pick('snack'),drink:pick('drink'),playlist:pick('playlist'),genres:[...new Set(genres)]}, done:{mood:true}});
+    });
+    if(g.stage==='nominate' && !b.done?.nominate) botOnce(b.id+':nom', wait+800, ()=>{
+      const s=suggestionsFor(b.answers).slice(0,4).sort(()=>Math.random()-.5).slice(0,2).map(c=>c.id);
+      write(path,'update',{noms:s, done:{nominate:true}});
+    });
+    if(g.stage==='bracket' && !g.pending){ const key=curKey(); if(!b.votes?.[key]) botOnce(b.id+':'+key, wait, ()=>{
+      if(!S.game||curKey()!==key) return;
+      const [a,c]=matchup(); const sa=BY_ID[a]?score(BY_ID[a],b.answers):3, sc=BY_ID[c]?score(BY_ID[c],b.answers):3;
+      const pa = 1/(1+Math.exp(-(sa-sc)*.6));
+      write(path,'update',{votes:{[key]: Math.random()<pa ? a : c}});
+    }); }
+  });
+}
+
+/* ---------- player actions ---------- */
+async function submitMood(){
+  const a=S.ui.ans; await write(myPath(),'update',{answers:{vibe:a.vibe,want:a.want,len:a.len,actor:a.actor||null,snack:a.snack||null,drink:a.drink||null,playlist:a.playlist||null,genres:a.genres||[]}, done:{mood:true}});
+}
+function myNoms(){ const p=meP()||{}; return {noms:p.noms||[], customs:p.customs||[]}; }
+async function nominate(id){
+  const {noms,customs}=myNoms(); if(noms.length+customs.length>=MAX_NOMS){ toast(`You can nominate up to ${MAX_NOMS}. Remove one first.`); return; }
+  if(!noms.includes(id)) await write(myPath(),'update',{noms:[...noms,id]});
+  S.ui.deck++; render();
+}
+async function addCustom(){
+  const t=S.ui.custom.trim(); if(!t) return;
+  const {noms,customs}=myNoms(); if(noms.length+customs.length>=MAX_NOMS){ toast(`You can nominate up to ${MAX_NOMS}. Remove one first.`); return; }
+  const id='c-'+t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40);
+  const hit=CATALOG.find(c=>c.t.toLowerCase()===t.toLowerCase());
+  S.ui.custom='';
+  if(hit) return nominate(hit.id);
+  await write(myPath(),'update',{customs:[...customs.filter(c=>c.id!==id),{id,t:t.slice(0,80)}]});
+}
+async function removeNom(id){
+  const {noms,customs}=myNoms();
+  await write(myPath(),'update',{noms:noms.filter(n=>n!==id), customs:customs.filter(c=>c.id!==id)});
+}
+async function vote(id){
+  const key=curKey(); if(S.game.pending) return;
+  S.ui.voted[key]=id; render();
+  await write(myPath(),'update',{votes:{[key]:id}});
+}
+
+/* ---------- views ---------- */
+function header(){
+  const badge = S.mode==='live' ? '<span class="badge live">Live sync on</span>' : '<span class="badge" title="This view can’t sync, so friends can’t join. Test friends still work.">Solo test mode</span>';
+  return `<div class="top"><span class="brand">What Should We Watch Tonight?</span>${badge}</div>`;
+}
+function peopleChips(flag){
+  return `<div class="people">${S.players.map(p=>`<span class="chip"><span class="av" style="background:${avColor(p.id)}">${esc(initials(p.name))}</span>${esc(p.name)}${p.id===S.me.id?' <small>(you)</small>':''}${S.game&&p.id===S.game.host&&S.game.hostGuild?' <span class="crown">Guild host</span>':''}${flag&&p.done&&p.done[flag]?' <span class="ok" aria-label="done">✓</span>':''}</span>`).join('')}</div>`;
+}
+function vArt(){
+  const people=[...new Set([...Object.values(ACTORS).map(a=>a.n),...CATALOG.flatMap(c=>c.cast)])].sort();
+  const row=(kind,key,label,has,preview)=>`<div class="artrow"><span class="artthumb ${kind}">${preview}</span><span class="artname">${esc(label)}${has?'<small>Added</small>':'<small>No image yet</small>'}</span>
+    <label class="btn small ${has?'ghost':''}" for="up-${kind}-${key}">${has?'Replace':'Upload'}</label>
+    <input type="file" accept="image/*" id="up-${kind}-${key}" data-up="${kind}" data-key="${esc(key)}" hidden></div>`;
+  return `${header()}
+  <span class="eyebrow">Art manager</span><h2>Posters and photos</h2>
+  <p class="lede">Upload poster art and cast photos you have the rights to use, like images from Angel’s press kits. Everyone who opens the game sees them. Titles without art keep their color cards.</p>
+  ${S.assets?'':'<p class="read">Uploading isn’t available in this view. Open the page as its owner in Claude to add art.</p>'}
+  <div class="panel stack"><span class="lbl">Poster art · tall images work best (2:3)</span>
+    ${CATALOG.map(c=>row('title',c.id,c.t,!!ART.titles[c.id], ART.titles[c.id]?`<img src="${blob(ART.titles[c.id])}" alt="">`:'')).join('')}</div>
+  <div class="panel stack"><span class="lbl">Cast photos · square head shots work best</span>
+    ${people.map(n=>row('person',slug(n),n,!!ART.people[slug(n)],personAvatar(n,44))).join('')}</div>
+  <button class="btn ghost" data-act="home">Done</button>`;
+}
+async function uploadArt(input){
+  const file=input.files&&input.files[0]; if(!file) return;
+  if(!S.assets){ toast('Uploading isn’t available here.'); return; }
+  if(file.size>8*1024*1024){ toast('That image is over 8 MB. Try a smaller export.'); return; }
+  const kind=input.dataset.up==='title'?'titles':'people', key=input.dataset.key;
+  toast('Uploading…');
+  try{
+    const res=await S.assets.upload(file);
+    const next={...ART[kind],[key]:res.id};
+    await write('art/'+kind,'set',next);
+    toast('Image added');
+  }catch(e){ toast(e&&e.code==='not_granted'?'Uploading needs editor access to this page.':'Upload failed. Try a JPG or PNG.'); }
+}
+function vHome(){
+  return `${header()}
+  <h1>What should we <em>watch</em> tonight?</h1>
+  <p class="lede">Everyone grabs their phone. Tell the app how you feel, nominate a few titles, then battle it out in a bracket until one movie is left standing.</p>
+  <div class="row"><button class="btn" data-act="go-host">Host a movie party</button><button class="btn ghost" data-act="go-join">Join with a code</button></div>
+  <p class="fine">Hosting comes with the Angel Guild. Joining is free for everyone.</p>
+  ${S.assets?'<button class="btn small ghost" data-act="art" style="align-self:flex-start">Manage poster art and photos</button>':''}
+  <div class="panel stack"><span class="eyebrow">How a night plays</span>
+  <ol class="steps">
+    <li><span><b>Count the room.</b> The host says how many are watching and gets a 4-letter code.</span></li>
+    <li><span><b>Everyone joins.</b> Each person enters the code on their own phone.</span></li>
+    <li><span><b>Mood check.</b> Four quick questions about energy, feelings, time, and genre.</span></li>
+    <li><span><b>Nominate.</b> The app pitches Angel titles matched to you. Say yes, pass, or add your own.</span></li>
+    <li><span><b>Bracket.</b> Head-to-head votes until one title wins the night.</span></li>
+  </ol></div>
+  <p class="fine">Titles come from a hand-picked sample of the Angel lineup for this prototype, not a live catalog.</p>`;
+}
+function vHost(){
+  const u=S.ui;
+  return `${header()}
+  <span class="eyebrow">Host setup</span><h2>Who’s on the couch?</h2>
+  <div class="panel stack">
+    <label class="lbl" for="name">Your name</label>
+    <input type="text" id="name" data-bind="name" maxlength="24" placeholder="Aaron" value="${esc(u.name)}" autocomplete="given-name">
+    <label class="lbl">How many people are watching?</label>
+    <div class="stepper"><button data-act="dec" aria-label="Fewer people">−</button><output>${u.expected}</output><button data-act="inc" aria-label="More people">+</button></div>
+    <label class="lbl">Who’s in the room?</label>
+    <div class="opts">${Object.entries(AUDIENCE).map(([k,v])=>`<button class="opt" data-act="aud" data-v="${k}" aria-pressed="${u.audience===k}">${esc(v.n)}<small>${esc(v.s)}</small></button>`).join('')}</div>
+    <p class="fine">Every suggestion and wildcard will fit ${esc(AUDIENCE[u.audience].label)}.</p>
+  </div>
+  <div class="panel stack party ${u.party?'on':''}">
+    <button class="switch" data-act="party" aria-pressed="${u.party}"><span class="knob" aria-hidden="true"></span><span><b>Make it a Movie Party</b><small>A birthday, sleepover or neighborhood night. You get an invite to send.</small></span></button>
+    ${u.party?`
+    <label class="lbl">What’s the occasion?</label>
+    <div class="opts">${Object.entries(OCCASIONS).map(([k,v])=>`<button class="opt" data-act="occ" data-v="${k}" aria-pressed="${u.occasion===k}">${esc(v.n)}</button>`).join('')}</div>
+    <label class="lbl" for="honoree">Who’s it for? (optional)</label>
+    <input type="text" id="honoree" data-bind="honoree" maxlength="30" placeholder="Jimmy" value="${esc(u.honoree)}">
+    <label class="lbl" for="when">When? (optional)</label>
+    <input type="text" id="when" data-bind="when" maxlength="40" placeholder="Saturday at 7" value="${esc(u.when)}">`:''}
+  </div>
+  <button class="switch guild" data-act="guild" aria-pressed="${u.guild}"><span class="knob" aria-hidden="true"></span><span><b>I’m an Angel Guild member</b><small>Hosting comes with the Guild. Guests just need the code.</small></span></button>
+  <p class="fine">Prototype: this switch stands in for a real Guild sign-in.</p>
+  <div class="row"><button class="btn ghost" data-act="home">Back</button><button class="btn" data-act="create" ${u.guild?'':'disabled'}>${u.party?'Create the party':'Get our code'}</button></div>`;
+}
+function vJoin(){
+  return `${header()}
+  <span class="eyebrow">Join a night</span><h2>Got a code?</h2>
+  <div class="panel stack">
+    <label class="lbl" for="jc">Game code</label>
+    <input type="text" class="code" id="jc" data-bind="joinCode" maxlength="4" placeholder="ABCD" value="${esc(S.ui.joinCode)}" autocomplete="off" autocapitalize="characters">
+    <label class="lbl" for="name">Your name</label>
+    <input type="text" id="name" data-bind="name" maxlength="24" placeholder="Your name" value="${esc(S.ui.name)}">
+  </div>
+  <div class="row"><button class="btn ghost" data-act="home">Back</button><button class="btn" data-act="join">Join</button></div>`;
+}
+function inviteText(g){
+  const p=g.party, aud=AUDIENCE[g.audience||'adults'];
+  const head = p ? OCCASIONS[p.occasion].line(p.honoree) : `${g.hostName} is hosting movie night!`;
+  return `${head} We want a movie everyone in the room will enjoy, so you get a vote.${p&&p.when?` ${p.when}.`:''}\n\nJoin with code ${S.code} on What Should We Watch Tonight? Every pick will fit ${aud.label}. No account needed.`;
+}
+function vInvite(g){
+  const p=g.party, aud=AUDIENCE[g.audience||'adults'];
+  return `<section class="invite">
+    <div class="bulbs" aria-hidden="true"></div>
+    <span class="eyebrow">${p?esc(OCCASIONS[p.occasion].n):'Movie night'}${p&&p.when?' · '+esc(p.when):''}</span>
+    <h3>${esc(p?OCCASIONS[p.occasion].line(p.honoree):g.hostName+' is hosting movie night!')}</h3>
+    <p>We want a movie everyone in the room will enjoy, so you get a vote.</p>
+    <div class="invite-facts"><span>Code <b>${S.code}</b></span><span>Fits <b>${esc(aud.label)}</b></span><span>No account needed</span></div>
+    ${isHost()?`<div class="row tight"><button class="btn small" data-act="copyinvite">Copy invite</button><a class="btn small ghost" href="https://wa.me/?text=${encodeURIComponent(inviteText(g))}" target="_blank" rel="noopener">WhatsApp</a></div>`:''}
+  </section>`;
+}
+function vLobby(){
+  const g=S.game, n=S.players.length, exp=g.expected||n;
+  const empties = Math.max(0,exp-n);
+  return `${header()}
+  <span class="eyebrow">${g.party?'Movie Party lobby':'Lobby'}</span><h2>${n} of ${exp} here</h2>
+  ${g.party||isHost()?vInvite(g):''}
+  <div class="panel stack" style="align-items:center;text-align:center">
+    <span class="lbl">Tell everyone to open this page and enter</span>
+    <div class="tiles">${S.code.split('').map(c=>`<span>${c}</span>`).join('')}</div>
+    <button class="btn small ghost" data-act="copy">Copy code</button>
+  </div>
+  <div class="stack">${peopleChips()}${empties?`<div class="people">${Array.from({length:empties},()=>'<span class="chip empty pulse">Waiting…</span>').join('')}</div>`:''}</div>
+  ${isHost() ? `<div class="row"><button class="btn ghost" data-act="bot">Add a test friend</button><button class="btn" data-act="start" ${n<2?'disabled':''}>Start the night</button></div>
+    <p class="fine">${n<2?'You need at least 2 people. Test friends answer and vote on their own so you can try it solo.':'You can start before everyone arrives. Late joiners hop in at the current step.'}</p>`
+  : `<p class="lede">Waiting for ${esc(g.hostName)} to start.</p>`}
+  <button class="btn small ghost" data-act="leave">Leave game</button>`;
+}
+function vMood(){
+  const q=Q[S.ui.qi], a=S.ui.ans;
+  const sel = v => q.multi ? (a.genres||[]).includes(v) : a[q.key]===v;
+  const can = q.multi || q.optional ? true : !!a[q.key];
+  return `${header()}
+  <div class="progress">${Q.map((_,i)=>`<i class="${i<=S.ui.qi?'on':''}"></i>`).join('')}</div>
+  <span class="eyebrow">Mood check · ${S.ui.qi+1} of ${Q.length}</span>
+  <h2>${esc(q.q)}</h2>${q.sub?`<p class="lede">${esc(q.sub)}</p>`:''}
+  <div class="opts">${q.opts.map(([v,l,s])=>`<button class="opt${q.key==='actor'?' with-face':''}" data-act="ans" data-v="${v}" aria-pressed="${sel(v)}">${q.key==='actor'?personAvatar(l,46):''}<span>${esc(l)}${s?`<small>${esc(s)}</small>`:''}</span></button>`).join('')}</div>
+  <div class="row">${S.ui.qi>0?'<button class="btn ghost" data-act="qback">Back</button>':''}<button class="btn" data-act="qnext" ${can?'':'disabled'}>${S.ui.qi===Q.length-1?(a.genres&&a.genres.length?'Lock it in':'Skip & lock it in'):(q.optional&&!a[q.key]?'Skip':'Next')}</button></div>`;
+}
+function vWaiting(flag, title){
+  const left=S.players.filter(p=>!(p.done&&p.done[flag])).map(p=>p.name);
+  return `${header()}
+  <span class="eyebrow">Locked in</span><h2>${esc(title)}</h2>
+  <p class="lede">${left.length?'Waiting on '+esc(left.join(', '))+'.':'Everyone’s in. Moving on…'}</p>
+  ${peopleChips(flag)}
+  ${flag==='mood'&&meP()?.answers?`<p class="read">${esc(VIBE_READ[meP().answers.vibe]||'')}${[ACTORS[meP().answers.actor],SNACKS[meP().answers.snack],DRINKS[meP().answers.drink],PLAYLISTS[meP().answers.playlist]].filter(Boolean).map(x=>' '+esc(x.read)).join('')}</p>`:''}
+  ${isHost()&&left.length?'<button class="btn small ghost" data-act="force">Don’t wait, move on</button>':''}`;
+}
+function vNominate(){
+  const p=meP(); if(!p||!p.answers) return vWaiting('mood','Hang tight');
+  const {noms,customs}=myNoms(), count=noms.length+customs.length;
+  const deck=suggestionsFor(p.answers).filter(c=>!noms.includes(c.id));
+  const cur=deck[S.ui.deck % Math.max(deck.length,1)];
+  const full = count>=MAX_NOMS;
+  const read=roomRead();
+  return `${header()}
+  <span class="eyebrow">Nominations · ${count} of ${MAX_NOMS}</span>
+  <h2>${full?'Your picks are in':'Want to watch this?'}</h2>
+  ${read?`<p class="read">${esc(read)}</p>`:''}
+  ${!full&&cur?`<div class="swipe-zone">
+    ${deck[(S.ui.deck+1)%deck.length]&&deck.length>1?`<div class="under" aria-hidden="true">${poster(deck[(S.ui.deck+1)%deck.length])}</div>`:''}
+    <div class="swipecard" id="swipecard" data-id="${cur.id}" tabindex="0" aria-label="${esc(cur.t)}. Swipe right to nominate, left to pass.">
+      ${poster(cur)}
+      <span class="stamp yes" aria-hidden="true">Nominate</span><span class="stamp no" aria-hidden="true">Pass</span>
+    </div>
+  </div>
+  <div class="deck-info stack">
+    <p class="match">${matchPct(cur,p.answers)}% match for you</p>
+    ${castRow(cur)}
+    <p class="blurb">${esc(cur.b)}</p>
+    <p class="why">${esc(whyLine(cur,p.answers))}</p>
+  </div>
+  <div class="swipe-btns">
+    <button class="swbtn no" data-act="pass" aria-label="Not tonight"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg></button>
+    <span class="swipe-hint">Swipe or tap</span>
+    <button class="swbtn yes" data-act="nom" data-id="${cur.id}" aria-label="Nominate it"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></button>
+  </div>`:''}
+  <div class="panel stack">
+    <label class="lbl" for="custom">Have something else in mind? Add any title.</label>
+    <div class="row"><input type="text" id="custom" data-bind="custom" maxlength="80" placeholder="Type a title" value="${esc(S.ui.custom)}" style="flex:3 1 180px"><button class="btn small" data-act="custom" ${full?'disabled':''}>Add</button></div>
+    ${count?`<div class="noms">${noms.map(id=>`<div class="nom"><span>${esc(BY_ID[id].t)}</span><button data-act="rm" data-id="${id}">Remove</button></div>`).join('')}${customs.map(c=>`<div class="nom"><span>${esc(c.t)} <small class="fine">(your pick)</small></span><button data-act="rm" data-id="${c.id}">Remove</button></div>`).join('')}</div>`:''}
+  </div>
+  <button class="btn coral" data-act="locknoms" ${count?'':'disabled'}>Send my ${count||''} pick${count===1?'':'s'} to the bracket</button>`;
+}
+function vBracketGrid(){
+  const g=S.game, size=g.rounds[0].length, total=Math.log2(size);
+  const names=['Opening round','Semifinal','Final']; const label=i=> total-i===1?'Final':total-i===2?'Semifinals':'Quarterfinals';
+  const e=id=>id?g.entries[id]:null;
+  let html='';
+  for(let r=0;r<total;r++){
+    const slots=g.rounds[r]||[], matches=size/2**(r+1);
+    html+=`<div class="round"><h4>${label(r)}</h4>`;
+    for(let m=0;m<matches;m++){
+      const a=slots[2*m], b=slots[2*m+1], w=(g.rounds[r+1]||[])[m];
+      const now=g.stage==='bracket'&&g.cur.r===r&&g.cur.m===m;
+      const cell=id=>!id?'<span class="tbd">TBD</span>':`<span class="${w?(w===id?'w':'l'):''}">${esc(e(id).t)}</span>`;
+      html+=`<div class="m${now?' now':''}">${cell(a)}${cell(b)}</div>`;
+    }
+    html+='</div>';
+  }
+  return `<div class="bracket-box"><div class="bracket">${html}</div></div>`;
+}
+function vBracket(){
+  const g=S.game, key=curKey(), pair=matchup(), t=tally(key,pair);
+  const mine=(meP()?.votes||{})[key]||S.ui.voted[key];
+  const res=g.pending&&g.lastResult&&g.lastResult.key===key?g.lastResult:null;
+  const voted=S.players.filter(p=>p.votes&&p.votes[key]).length;
+  const total=Math.log2(g.rounds[0].length), roundName= total-g.cur.r===1?'The final':total-g.cur.r===2?'Semifinal':'Quarterfinal';
+  const card=id=>{ const cls=res?(res.winner===id?' won':' lost'):'';
+    return `<button class="pick${cls}" data-act="vote" data-id="${id}" aria-pressed="${mine===id}" ${res?'disabled':''}>${poster(g.entries[id])}<span class="votes">${res?`${res.tally[id]} vote${res.tally[id]===1?'':'s'}`:(mine===id?'Your vote':'')}</span></button>`; };
+  return `${header()}
+  <span class="eyebrow">${roundName} · Match ${g.cur.m+1}</span>
+  <h2>${res?esc(g.entries[res.winner].t)+' moves on'+(res.tie?' (tiebreak by mood)':''):'Tap the one you’d rather watch'}</h2>
+  <div class="vs">${card(pair[0])}<span class="mid">VS</span>${card(pair[1])}</div>
+  <div class="status"><span>${voted} of ${S.players.length} voted${mine&&!res?' · you can switch until everyone’s in':''}</span>
+  ${isHost()&&!res&&voted<S.players.length?'<button class="btn small ghost" data-act="force">Call it now</button>':''}</div>
+  <div class="bulbs" aria-hidden="true"></div>
+  ${vBracketGrid()}`;
+}
+function fmtQty(q){
+  if(q==null) return '';
+  const whole=Math.floor(q+1e-9), f=q-whole;
+  const fr=[[.25,'¼'],[.33,'⅓'],[.5,'½'],[.67,'⅔'],[.75,'¾']].find(([v])=>Math.abs(f-v)<.06);
+  if(f<.06) return String(whole);
+  if(fr) return (whole?whole+' ':'')+fr[1];
+  return (Math.round(q*10)/10).toString();
+}
+function topPick(key){ const t={}; S.players.forEach(p=>{ const k=p.answers&&p.answers[key]; if(k) t[k]=(t[k]||0)+1; }); return {tally:t, top:Object.entries(t).sort((a,b)=>b[1]-a[1])[0]}; }
+function snackFor(g){
+  const pair=PAIRING[g.winner]||PAIRING_NEW[g.winner], {tally,top}=topPick('snack');
+  if(pair) return {key:pair[0], why:pair[1], tally};
+  if(top) return {key:SNACKS[top[0]].recipe, why:`The room’s top snack pick was ${SNACKS[top[0]].n.toLowerCase()}, so here’s a version worth making.`, tally};
+  return {key:'brownbutter', why:'You can’t go wrong with popcorn.', tally};
+}
+function drinkFor(g){
+  const pair=DRINK_PAIR[g.winner]||(DRINK_PAIR_NEW[g.winner]?[DRINK_PAIR_NEW[g.winner],'Pairs with tonight\u2019s pick.']:null), {tally,top}=topPick('drink');
+  if(pair) return {key:pair[0], why:pair[1], tally};
+  if(top) return {key:DRINKS[top[0]].recipe, why:`The room’s top drink pick was ${DRINKS[top[0]].n.toLowerCase()}.`, tally};
+  return {key:'float', why:'Floats make any night better.', tally};
+}
+const scaleFactor = () => Math.max(1, Math.ceil(S.players.length/4*2)/2);
+const ingLine = ([q,u,n],f) => [fmtQty(q==null?null:q*f),u,n].filter(Boolean).join(' ');
+function shoppingList(){
+  const g=S.game, f=scaleFactor();
+  return [snackFor(g),drinkFor(g)].map(x=>{ const r=RECIPES[x.key]; return r.n+' (serves '+Math.round(4*f)+')\n'+r.ing.map(i=>'- '+ingLine(i,f)).join('\n'); }).join('\n\n');
+}
+function recipeBlock(kind, x, names){
+  const r=RECIPES[x.key], f=scaleFactor(), serves=Math.round(4*f);
+  const tallyTxt=Object.entries(x.tally).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`${n} ${names[k].n.toLowerCase()}`).join(', ');
+  return `<div class="stack pairing">
+    <span class="lbl kind">${kind}</span>
+    <h3>${esc(r.n)}</h3>
+    <p class="lede">${esc(x.why)}</p>
+    ${tallyTxt?`<p class="fine">Room ${kind.toLowerCase()} vote: ${esc(tallyTxt)}.</p>`:''}
+    <div class="recipe">
+      <div class="stack"><span class="lbl">Ingredients · serves ${serves}</span>
+        <ul class="ing">${r.ing.map(i=>{ const q=ingLine([i[0],i[1],''],f); return `<li>${q?`<b>${esc(q)}</b> `:''}${esc(i[2])}</li>`; }).join('')}</ul></div>
+      <div class="stack"><span class="lbl">Steps</span>
+        <ol class="how">${r.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></div>
+    </div></div>`;
+}
+function vSnack(){
+  const g=S.game;
+  return `<section class="panel stack snack">
+    <span class="eyebrow">The ultimate showing needs snacks</span>
+    ${recipeBlock('Snack', snackFor(g), SNACKS)}
+    <div class="divider" aria-hidden="true"></div>
+    ${recipeBlock('Drink', drinkFor(g), DRINKS)}
+    <p class="fine">Every drink here is alcohol-free.</p>
+    <button class="btn small ghost" data-act="shop">Copy shopping list</button>
+  </section>`;
+}
+/* Scoring: +3 per bracket win by your nominee, +5 if it takes the night, +1 per correct call */
+function standings(){
+  const g=S.game, T=g.rounds.length-1;
+  const wins=id=>{ let w=0; for(let r=1;r<g.rounds.length;r++) if((g.rounds[r]||[]).includes(id)) w++; return w; };
+  const matches=[]; for(let r=0;r<T;r++) (g.rounds[r+1]||[]).forEach((w,m)=>matches.push({key:`r${r}m${m}`,w}));
+  const reach=(w)=> w===T?'Won the night':w===T-1?'Made the final':(T===3&&w===1)?'Made the semis':'Out in round one';
+  const rows=S.players.map(p=>{
+    const mine=[...(p.noms||[]),...(p.customs||[]).map(c=>c.id)].filter(id=>g.entries[id]&&g.rounds[0].includes(id));
+    const best=mine.map(id=>({id,w:wins(id)})).sort((a,b)=>b.w-a.w)[0]||null;
+    const nomPts=mine.reduce((s,id)=>s+3*wins(id)+(id===g.winner?5:0),0);
+    const calls=matches.filter(x=>p.votes&&p.votes[x.key]===x.w).length;
+    const contrary=matches.filter(x=>p.votes&&p.votes[x.key]&&p.votes[x.key]!==x.w).length;
+    const writeInFar=(p.customs||[]).some(c=>g.rounds[0].includes(c.id)&&wins(c.id)>=T-1);
+    return {p,best,calls,contrary,writeInFar,pts:nomPts+calls,missed:(p.noms||[]).length+(p.customs||[]).length>mine.length};
+  }).sort((a,b)=>b.pts-a.pts||b.calls-a.calls||(b.best?b.best.w:-1)-(a.best?a.best.w:-1));
+  return {rows,total:matches.length,reach,T};
+}
+/* Where shares send people. Swap for a campaign or referral link. */
+const SHARE_URL = 'https://www.angel.com/guild';
+const TAGS = '#WhatShouldWeWatchTonight #MovieNight #AngelGuild';
+const BADGES = {
+  mogul:{n:'Movie Mogul',c:'#FFC145',glyph:'crown',line:x=>`Won the room with ${x.pts} points`,
+    cap:x=>`Pretty much a movie mogul now. I won our movie night bracket with ${x.pts} points. Tonight's feature: ${x.title}.`},
+  tastemaker:{n:'Tastemaker',c:'#FF6F59',glyph:'star',line:()=>'Nominated the winning movie',
+    cap:x=>`My pick won the whole bracket. ${x.title} beat everything the room threw at it. Taste: undefeated.`},
+  perfect:{n:'Perfect Read',c:'#5CE1B0',glyph:'target',line:x=>`Called all ${x.total} matchups`,
+    cap:x=>`Went ${x.total} for ${x.total} calling our movie night bracket. I know my people.`},
+  oracle:{n:'The Oracle',c:'#9CB8FF',glyph:'eye',line:x=>`Called ${x.calls} of ${x.total} matchups`,
+    cap:x=>`Called ${x.calls} of ${x.total} matchups at movie night. Don't bet against me.`},
+  writein:{n:'Write-in Legend',c:'#FFE08A',glyph:'pen',line:()=>'Snuck a write-in into the final',
+    cap:x=>`Nobody saw my write-in coming. It went all the way to the final on movie night.`},
+  rebel:{n:'Rebel With a Remote',c:'#F49CFF',glyph:'bolt',line:x=>`Voted against the room ${x.contrary} times`,
+    cap:x=>`Voted against the room ${x.contrary} times at movie night and I'd do it again. We're watching ${x.title}.`},
+  contender:{n:'Box Office Contender',c:'#FFA48F',glyph:'ticket',line:x=>`Runner-up with ${x.pts} points`,
+    cap:x=>`Runner-up at movie night with ${x.pts} points. Next week the bracket is mine.`},
+  sport:{n:'Good Sport',c:'#8EF0D0',glyph:'ticket',line:()=>'Showed up. Voted. Ate the snacks.',
+    cap:x=>`Lost the movie night bracket. Still got snacks. We're watching ${x.title} tonight.`}
+};
+const BADGE_ORDER=['mogul','tastemaker','perfect','oracle','writein','rebel','contender','sport'];
+function badgesFor(st){
+  const g=S.game, {rows,total}=st, out=new Map(rows.map(r=>[r.p.id,[]]));
+  const add=(r,k)=>out.get(r.p.id).push(k);
+  const topPts=rows[0]?rows[0].pts:0, secondPts=Math.max(0,...rows.map(r=>r.pts).filter(p=>p<topPts)), maxCalls=Math.max(0,...rows.map(r=>r.calls)), maxCon=Math.max(0,...rows.map(r=>r.contrary));
+  rows.forEach(r=>{
+    if(topPts>0 && r.pts===topPts) add(r,'mogul');
+    if(r.best && r.best.id===g.winner) add(r,'tastemaker');
+    if(total && r.calls===total) add(r,'perfect'); else if(maxCalls>0 && r.calls===maxCalls) add(r,'oracle');
+    if(r.writeInFar) add(r,'writein');
+    if(maxCon>=2 && r.contrary===maxCon) add(r,'rebel');
+    if(!out.get(r.p.id).length && secondPts>0 && r.pts===secondPts) add(r,'contender');
+    if(!out.get(r.p.id).length) add(r,'sport');
+    out.set(r.p.id, out.get(r.p.id).sort((a,b)=>BADGE_ORDER.indexOf(a)-BADGE_ORDER.indexOf(b)));
+  });
+  return out;
+}
+function badgeCtx(st, row){ return {pts:row.pts, calls:row.calls, contrary:row.contrary, total:st.total, title:S.game.entries[S.game.winner].t, name:row.p.name}; }
+function captionFor(k, x, short){
+  const base=BADGES[k].cap(x);
+  return short ? `${base} ${TAGS}` : `${base}\n\nWe settle movie night with a bracket now. Find your next watch on Angel.\n${TAGS}`;
+}
+
+/* ---- badge image (1080x1350, feed-sized) drawn on canvas ---- */
+function drawGlyph(x, kind, cx, cy, s, col){
+  x.save(); x.translate(cx,cy); x.fillStyle=col; x.strokeStyle=col; x.lineWidth=s*.09; x.lineJoin='round'; x.lineCap='round';
+  x.beginPath();
+  if(kind==='crown'){ x.moveTo(-s*.5,s*.3); x.lineTo(-s*.55,-s*.3); x.lineTo(-s*.25,0); x.lineTo(0,-s*.45); x.lineTo(s*.25,0); x.lineTo(s*.55,-s*.3); x.lineTo(s*.5,s*.3); x.closePath(); x.fill(); x.fillRect(-s*.5,s*.36,s,s*.12); }
+  else if(kind==='star'){ for(let i=0;i<10;i++){ const r=i%2?s*.24:s*.55, a=-Math.PI/2+i*Math.PI/5; x.lineTo(Math.cos(a)*r,Math.sin(a)*r);} x.closePath(); x.fill(); }
+  else if(kind==='target'){ [.55,.36,.16].forEach((r,i)=>{ x.beginPath(); x.arc(0,0,s*r,0,7); i===2?x.fill():x.stroke(); }); }
+  else if(kind==='eye'){ x.moveTo(-s*.6,0); x.quadraticCurveTo(0,-s*.6,s*.6,0); x.quadraticCurveTo(0,s*.6,-s*.6,0); x.stroke(); x.beginPath(); x.arc(0,0,s*.18,0,7); x.fill(); }
+  else if(kind==='pen'){ x.rotate(-Math.PI/4); x.fillRect(-s*.12,-s*.55,s*.24,s*.8); x.beginPath(); x.moveTo(-s*.12,s*.27); x.lineTo(s*.12,s*.27); x.lineTo(0,s*.5); x.closePath(); x.fill(); }
+  else if(kind==='bolt'){ x.moveTo(s*.1,-s*.6); x.lineTo(-s*.35,s*.08); x.lineTo(-s*.02,s*.08); x.lineTo(-s*.12,s*.6); x.lineTo(s*.35,-s*.1); x.lineTo(s*.02,-s*.1); x.closePath(); x.fill(); }
+  else { const w=s*1.1,h=s*.62; x.moveTo(-w/2,-h/2); x.lineTo(w/2,-h/2); x.lineTo(w/2,-s*.1); x.arc(w/2,0,s*.1,-Math.PI/2,Math.PI/2,true); x.lineTo(w/2,h/2); x.lineTo(-w/2,h/2); x.lineTo(-w/2,s*.1); x.arc(-w/2,0,s*.1,Math.PI/2,-Math.PI/2,true); x.closePath(); x.fill(); }
+  x.restore();
+}
+function wrapText(x, text, maxW){ const words=String(text).split(/\s+/), lines=[]; let cur=''; words.forEach(w=>{ const t=cur?cur+' '+w:w; if(x.measureText(t).width>maxW&&cur){ lines.push(cur); cur=w; } else cur=t; }); if(cur) lines.push(cur); return lines; }
+async function makeBadgeImage(k, ctx){
+  try{ await Promise.all(['900 100px "Big Shoulders Display"','700 40px "Figtree"','600 40px "Figtree"'].map(f=>document.fonts.load(f))); }catch{}
+  const W=1080,H=1350, c=document.createElement('canvas'); c.width=W; c.height=H; const x=c.getContext('2d'); const B=BADGES[k];
+  const g=x.createLinearGradient(0,0,0,H); g.addColorStop(0,'#2a1f57'); g.addColorStop(1,'#120e24'); x.fillStyle=g; x.fillRect(0,0,W,H);
+  const glow=x.createRadialGradient(W/2,470,40,W/2,470,520); glow.addColorStop(0,B.c+'55'); glow.addColorStop(1,'#00000000'); x.fillStyle=glow; x.fillRect(0,0,W,H);
+  // marquee bulbs
+  x.fillStyle='#FFC145'; const m=34, step=44;
+  for(let p=m;p<=W-m;p+=step){ [m,H-m].forEach(yy=>{ x.beginPath(); x.arc(p,yy,7,0,7); x.fill(); }); }
+  for(let p=m+step;p<H-m;p+=step){ [m,W-m].forEach(xx=>{ x.beginPath(); x.arc(xx,p,7,0,7); x.fill(); }); }
+  x.textAlign='center'; x.textBaseline='alphabetic';
+  x.fillStyle='#FFC145'; x.font='800 34px "Big Shoulders Display", Impact, sans-serif'; x.letterSpacing='6px';
+  x.fillText('WHAT SHOULD WE WATCH TONIGHT?', W/2, 128); x.letterSpacing='0px';
+  // medallion
+  const cy=395, R=180;
+  x.beginPath(); x.arc(W/2,cy,R+18,0,7); x.fillStyle='#ffffff22'; x.fill();
+  x.beginPath(); x.arc(W/2,cy,R,0,7); x.fillStyle=B.c; x.fill();
+  x.beginPath(); x.arc(W/2,cy,R-22,0,7); x.strokeStyle='#15112A44'; x.lineWidth=6; x.stroke();
+  drawGlyph(x,B.glyph,W/2,cy,190,'#15112A');
+  x.fillStyle='#F4F0FF'; x.font='900 112px "Big Shoulders Display", Impact, sans-serif';
+  const nameLines=wrapText(x,B.n.toUpperCase(),W-160).slice(0,2);
+  let y = nameLines.length>1 ? 700 : 740; nameLines.forEach(l=>{ x.fillText(l,W/2,y); y+=100; });
+  x.fillStyle='#ABA2D0'; x.font='600 40px "Figtree", system-ui, sans-serif'; x.fillText(B.line(ctx), W/2, y+4); y+=88;
+  x.fillStyle='#FFC145'; x.font='900 64px "Big Shoulders Display", Impact, sans-serif'; x.fillText(ctx.name.toUpperCase(), W/2, y); y+=70;
+  x.strokeStyle='#3D3570'; x.lineWidth=3; x.beginPath(); x.moveTo(W/2-160,y); x.lineTo(W/2+160,y); x.stroke(); y+=58;
+  x.fillStyle='#FF6F59'; x.font='700 28px "Figtree", system-ui, sans-serif'; x.letterSpacing='4px'; x.fillText('TONIGHT’S FEATURE', W/2, y); x.letterSpacing='0px'; y+=62;
+  let fs=62, t=ctx.title.toUpperCase(); x.fillStyle='#F4F0FF';
+  do { x.font=`900 ${fs}px "Big Shoulders Display", Impact, sans-serif`; fs-=2; } while(x.measureText(t).width>W-180 && fs>40);
+  while(x.measureText(t).width>W-180 && t.length>4) t=t.slice(0,-2).trimEnd()+'\u2026';
+  x.fillText(t,W/2,y);
+  x.fillStyle='#ABA2D0'; x.font='600 30px "Figtree", system-ui, sans-serif'; x.fillText('Settle your movie night on Angel · angel.com/guild', W/2, H-78);
+  return c.toDataURL('image/png');
+}
+const imgCache = {};
+function badgeImg(k, ctx){
+  const key=[S.code,S.game.winner,S.me.id,k].join('|');
+  if(imgCache[key]===undefined){ imgCache[key]=null; makeBadgeImage(k,ctx).then(u=>{ imgCache[key]=u; render(); }).catch(()=>{ imgCache[key]='fail'; render(); }); }
+  return imgCache[key];
+}
+function dataUrlBytes(u){ const b=atob(u.split(',')[1]); const a=new Uint8Array(b.length); for(let i=0;i<b.length;i++) a[i]=b.charCodeAt(i); return a; }
+function shareLinks(k, x){
+  const long=captionFor(k,x,false), short=captionFor(k,x,true), u=encodeURIComponent(SHARE_URL), L=encodeURIComponent(long+'\n'+SHARE_URL);
+  return [
+    ['X','https://x.com/intent/tweet?text='+encodeURIComponent(short)+'&url='+u],
+    ['Facebook','https://www.facebook.com/sharer/sharer.php?u='+u],
+    ['Threads','https://www.threads.net/intent/post?text='+L],
+    ['Bluesky','https://bsky.app/intent/compose?text='+encodeURIComponent(short+' '+SHARE_URL)],
+    ['LinkedIn','https://www.linkedin.com/sharing/share-offsite/?url='+u],
+    ['WhatsApp','https://wa.me/?text='+L],
+    ['Reddit','https://www.reddit.com/submit?url='+u+'&title='+encodeURIComponent(BADGES[k].cap(x))]
+  ];
+}
+function vBadges(st, mine){
+  const row=st.rows.find(r=>r.p.id===S.me.id); if(!row||!mine||!mine.length) return '';
+  const k = mine.includes(S.ui.badge) ? S.ui.badge : mine[0];
+  const x=badgeCtx(st,row), img=badgeImg(k,x), B=BADGES[k];
+  const lbTitle=S.game.entries[S.game.winner].t;
+  return `<section class="panel stack badges">
+    <span class="eyebrow">You earned ${mine.length>1?mine.length+' badges':'a badge'}</span>
+    ${mine.length>1?`<div class="row badge-pick">${mine.map(b=>`<button class="btn small ${b===k?'':'ghost'}" data-act="badge" data-id="${b}" aria-pressed="${b===k}">${esc(BADGES[b].n)}</button>`).join('')}</div>`:''}
+    <div class="badge-card">
+      ${img&&img!=='fail'?`<img src="${img}" alt="${esc(B.n)} badge for ${esc(row.p.name)}">`:`<div class="badge-wait pulse" style="--b:${B.c}">${img==='fail'?'Couldn’t draw the badge here.':'Printing your badge…'}</div>`}
+      <div class="stack" style="min-width:0">
+        <h3 style="color:${B.c}">${esc(B.n)}</h3>
+        <p class="cap">${esc(captionFor(k,x,false))}</p>
+        <div class="row tight">
+          <button class="btn small" data-act="savebadge" data-id="${k}" ${img&&img!=='fail'?'':'disabled'}>Save image</button>
+          <button class="btn small ghost" data-act="copyimg" data-id="${k}" ${img&&img!=='fail'?'':'disabled'}>Copy image</button>
+          <button class="btn small ghost" data-act="copycap" data-id="${k}">Copy caption</button>
+        </div>
+      </div>
+    </div>
+    <span class="lbl">Post it</span>
+    <div class="socials">
+      ${shareLinks(k,x).map(([n,href])=>`<a class="soc" href="${esc(href)}" target="_blank" rel="noopener" data-act="sharelink" data-id="${k}">${n}</a>`).join('')}
+      <button class="soc" data-act="insta" data-id="${k}">Instagram</button>
+      <button class="soc" data-act="insta" data-id="${k}" data-net="TikTok">TikTok</button>
+    </div>
+    <div class="lb">
+      <div class="stack" style="min-width:0"><b>Log it on Letterboxd</b><small>Opens ${esc(lbTitle)} on Letterboxd and copies a review you can paste.</small></div>
+      <a class="btn small coral" href="https://letterboxd.com/search/films/${encodeURIComponent(lbTitle)}/" target="_blank" rel="noopener" data-act="letterboxd" data-id="${k}">Letterboxd</a>
+    </div>
+    <p class="fine">Instagram and TikTok don’t accept posts from web links. Tap one to save the image and copy your caption, then post from the app. The other buttons open a ready-to-post draft with your caption.</p>
+  </section>`;
+}
+function letterboxdReview(k,x){ return `Watched ${x.title} after it won our movie night bracket. ${BADGES[k].cap(x)} Picked with What Should We Watch Tonight? on Angel.`; }
+
+function vScores(){
+  const st=standings(), g=S.game, {rows,total,reach}=st, bmap=badgesFor(st);
+  const top=rows[0], kingmaker=[...rows].sort((a,b)=>b.calls-a.calls)[0], rebel=[...rows].sort((a,b)=>b.contrary-a.contrary)[0];
+  const awards=[];
+  const champs=rows.filter(r=>r.best&&r.best.id===g.winner);
+  if(champs.length) awards.push(['Tastemaker',[...new Set(champs.map(r=>r.p.name))].join(' & '),'nominated the winner']);
+  else if(g.entries[g.winner].wild) awards.push(['Tastemaker','The app','nobody nominated the winner, so the wildcard takes the credit']);
+  if(kingmaker&&kingmaker.calls) awards.push(['Called it',kingmaker.p.name,`picked the winner in ${kingmaker.calls} of ${total} matchups`]);
+  if(rebel&&rebel.contrary>=2&&rebel!==kingmaker) awards.push(['Rebel',rebel.p.name,`voted against the room ${rebel.contrary} times`]);
+  const medal=i=>['1st','2nd','3rd'][i]||`${i+1}th`;
+  return `${vBadges(st, bmap.get(S.me.id))}<section class="panel stack scores">
+    <span class="eyebrow">Standings</span>
+    <h3>${top&&top.pts?esc(top.p.name)+' wins the room':'Nobody scored. Rematch?'}</h3>
+    <div class="awards">${awards.map(([t,n,d])=>`<div class="award"><span class="lbl">${esc(t)}</span><b>${esc(n)}</b><small>${esc(d)}</small></div>`).join('')}</div>
+    <ol class="board">${rows.map((r,i)=>`<li class="${i===0&&r.pts?'lead':''}">
+      <span class="rk">${medal(i)}</span>
+      <span class="who"><b>${esc(r.p.name)}${r.p.id===S.me.id?' <small>(you)</small>':''}</b>
+        <span class="bchips">${(bmap.get(r.p.id)||[]).map(b=>`<i style="--b:${BADGES[b].c}">${esc(BADGES[b].n)}</i>`).join('')}</span>
+        <small>${r.best?`${esc(g.entries[r.best.id].t)} · ${reach(r.best.w)}`:(r.missed?'Picks didn’t make the bracket':'No nominations')} · ${r.calls}/${total} calls</small></span>
+      <span class="pts">${r.pts}<small>pts</small></span></li>`).join('')}</ol>
+    <p class="fine">Scoring: 3 points each time your nominee wins a matchup, 5 more if it takes the night, and 1 for every matchup you called right.</p>
+  </section>`;
+}
+function vKeep(){
+  const saved=S.ui.emailSaved, g=S.game, host=isHost();
+  return `<section class="panel stack keep">
+    <span class="eyebrow">Keep tonight</span>
+    ${saved?`<h3>You’re on the list</h3><p class="lede">Your badge, tonight’s recipes and a heads-up next time ${esc(g.hostName)} throws a movie party are headed your way.</p>`:`
+    <h3>Want your badge and the recipes?</h3>
+    <p class="lede">Drop your email and we’ll send your badge image, tonight’s snack and drink recipes, and a heads-up when a new Angel movie fits your mood profile.</p>
+    <div class="row"><input type="email" id="email" data-bind="email" placeholder="you@example.com" value="${esc(S.ui.email)}" autocomplete="email" style="flex:3 1 200px"><button class="btn small" data-act="email">Send them to me</button></div>
+    <label class="check"><input type="checkbox" id="emailOk" data-act="emailok" ${S.ui.emailOk?'checked':''}> Angel can also email me about movie nights and new releases.</label>
+    <p class="fine">Totally optional. Skip it and keep the party going. Prototype: emails are saved privately but not sent yet.</p>`}
+    ${host?'':`<div class="hostcta"><div class="stack" style="min-width:0"><b>Want to throw the next one?</b><small>Hosting a movie party comes with the Angel Guild.</small></div><a class="btn small coral" href="${SHARE_URL}" target="_blank" rel="noopener">See the Guild</a></div>`}
+  </section>`;
+}
+async function saveEmail(){
+  const e=S.ui.email.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){ toast('That email doesn’t look right. Check for a typo.'); return; }
+  const rec={email:e, marketingOk:!!S.ui.emailOk, from:'movie-night', game:S.code, winner:S.game.winner, at:Date.now()};
+  if(S.mode==='live' && S.uidOk){
+    try{ await S.db.doc('data/users/'+S.me.id+'/contact').set(rec); }
+    catch{ toast('Couldn’t save that here. Try again in a moment.'); return; }
+  }
+  S.ui.emailSaved=true; render();
+}
+function vWinner(){
+  const g=S.game, w=g.entries[g.winner];
+  const info=BY_ID[g.winner];
+  return `${header()}
+  <div class="marquee">
+    <span class="eyebrow">Tonight’s feature</span>
+    ${poster(w)}
+    <h2>${esc(w.t)}</h2>
+    ${info?`<p class="lede">${esc(info.b)}</p>`:''}
+    ${info?`<a class="btn" href="https://www.angel.com/watch" target="_blank" rel="noopener">Find it on Angel</a>`:`<p class="fine">A pick from the room. Pull it up wherever you watch.</p>`}
+  </div>
+  ${vScores()}
+  ${vSnack()}
+  ${vKeep()}
+  ${vBracketGrid()}
+  <div class="row">${isHost()?'<button class="btn" data-act="rematch">Run it back with the same crew</button>':''}<button class="btn ghost" data-act="leave">Done</button></div>`;
+}
+function render(){
+  if(S.ui.dragging){ S.ui.pendingRender=true; return; }
+  const ae=document.activeElement, focusId=ae&&ae.id, sel=ae&&ae.selectionStart;
+  let html;
+  if(!S.code) html = S.ui.screen==='host'?vHost():S.ui.screen==='join'?vJoin():S.ui.screen==='art'?vArt():vHome();
+  else if(!S.game) html = `${header()}<h2 class="pulse">Connecting…</h2>`;
+  else {
+    const st=S.game.stage, p=meP();
+    if(!p) html = `${header()}<h2 class="pulse">Joining…</h2>`;
+    else if(st==='lobby') html=vLobby();
+    else if(st==='mood') html = p.done?.mood ? vWaiting('mood','Mood logged') : vMood();
+    else if(st==='nominate') html = p.done?.nominate ? vWaiting('nominate','Picks sent') : vNominate();
+    else if(st==='bracket') html=vBracket();
+    else if(st==='winner') html=vWinner();
+  }
+  $('#app').innerHTML=html;
+  wireSwipe();
+  if(focusId){ const el=document.getElementById(focusId); if(el){ el.focus(); try{ if(sel!=null) el.setSelectionRange(sel,sel); }catch{} } }
+  if(S.code && S.game?.stage==='winner' && S.ui.celebrated!==S.code+S.game.winner){ S.ui.celebrated=S.code+S.game.winner; confetti(); }
+}
+
+/* ---------- events ---------- */
+document.addEventListener('change',e=>{ if(e.target.dataset&&e.target.dataset.up) uploadArt(e.target); });
+document.addEventListener('input',e=>{ const b=e.target.dataset.bind; if(!b) return; S.ui[b]= b==='joinCode'? e.target.value.toUpperCase().replace(/[^A-Z]/g,'') : e.target.value; if(b==='joinCode') e.target.value=S.ui[b]; });
+document.addEventListener('keydown',e=>{ if(e.key!=='Enter') return; const id=e.target.id; if(id==='email'){ saveEmail(); return; } if(id==='custom') addCustom(); if(id==='jc'||(id==='name'&&S.ui.screen==='join')) joinGame(); if(id==='name'&&S.ui.screen==='host') createGame(); });
+document.addEventListener('click',async e=>{
+  const el=e.target.closest('[data-act]'); if(!el||el.disabled) return;
+  const a=el.dataset.act, id=el.dataset.id;
+  try{
+  switch(a){
+    case 'go-host': S.ui.screen='host'; render(); break;
+    case 'go-join': S.ui.screen='join'; render(); break;
+    case 'home': S.ui.screen='home'; render(); break;
+    case 'inc': S.ui.expected=Math.min(12,S.ui.expected+1); render(); break;
+    case 'dec': S.ui.expected=Math.max(2,S.ui.expected-1); render(); break;
+    case 'create': el.disabled=true; await createGame(); break;
+    case 'join': el.disabled=true; await joinGame(); render(); break;
+    case 'copy': try{ await navigator.clipboard.writeText(S.code); toast('Code copied'); }catch{ toast('Code: '+S.code); } break;
+    case 'bot': await addBot(); break;
+    case 'badge': S.ui.badge=id; render(); break;
+    case 'art': S.ui.screen='art'; render(); break;
+    case 'aud': S.ui.audience=el.dataset.v; render(); break;
+    case 'occ': S.ui.occasion=el.dataset.v; render(); break;
+    case 'party': S.ui.party=!S.ui.party; render(); break;
+    case 'guild': S.ui.guild=!S.ui.guild; render(); break;
+    case 'copyinvite': toast(await copyText(inviteText(S.game))?'Invite copied. Paste it in your group text.':'Couldn\u2019t copy. The code is '+S.code+'.'); break;
+    case 'emailok': S.ui.emailOk=el.checked; break;
+    case 'email': await saveEmail(); break;
+    case 'copycap': case 'sharelink': case 'insta': case 'letterboxd': case 'savebadge': case 'copyimg': await badgeAction(a, id, el); break;
+    case 'shop': { const t=shoppingList(); try{ await navigator.clipboard.writeText(t); toast('Shopping list copied'); }catch{ toast('Couldn\u2019t copy here. The list is on screen.'); } break; }
+    case 'start': S.ui.qi=0; S.ui.ans={genres:[]}; await hostWrite({stage:'mood'}); break;
+    case 'leave': leave(); break;
+    case 'ans': { const q=Q[S.ui.qi], v=el.dataset.v;
+      if(q.multi){ const g=S.ui.ans.genres||[]; S.ui.ans.genres = g.includes(v)? g.filter(x=>x!==v) : (g.length<q.multi? [...g,v] : g); }
+      else { S.ui.ans[q.key]=v; if(S.ui.qi<Q.length-1){ render(); setTimeout(()=>{ if(S.ui.ans[q.key]===v&&Q[S.ui.qi]===q){ S.ui.qi++; render(); } },260); return; } }
+      render(); break; }
+    case 'qback': S.ui.qi=Math.max(0,S.ui.qi-1); render(); break;
+    case 'qnext': if(S.ui.qi<Q.length-1){ S.ui.qi++; render(); } else { el.disabled=true; await submitMood(); } break;
+    case 'nom': await nominate(id); break;
+    case 'pass': S.ui.deck++; render(); break;
+    case 'custom': await addCustom(); break;
+    case 'rm': await removeNom(id); break;
+    case 'locknoms': el.disabled=true; await write(myPath(),'update',{done:{nominate:true}}); break;
+    case 'vote': await vote(id); break;
+    case 'force': await forceAdvance(); break;
+    case 'rematch': {
+      const resets=S.players.map(p=>write(gamePath()+'/players/'+p.id,'set',{name:p.name,bot:!!p.bot,joinedAt:p.joinedAt,done:{},votes:{},noms:[],customs:[]}));
+      await Promise.all(resets); S.host.botTimers.clear();
+      Object.assign(S.ui,{qi:0,ans:{genres:[]},deck:0,custom:'',voted:{}});
+      await write(gamePath(),'set',{host:S.game.host,hostName:S.game.hostName,hostGuild:true,expected:S.game.expected,audience:S.game.audience||'adults',party:S.game.party||null,stage:'mood',createdAt:Date.now()});
+      break; }
+  }
+  }catch(err){ /* toast already shown by write() */ }
+});
+
+async function copyText(t){ try{ await navigator.clipboard.writeText(t); return true; }catch{ return false; } }
+function currentBadgeCtx(){ const st=standings(), row=st.rows.find(r=>r.p.id===S.me.id); return badgeCtx(st,row); }
+async function saveBadge(k, x){
+  const img=badgeImg(k,x); if(!img||img==='fail') return false;
+  if(!S.dl){ toast('Saving isn’t available here. Press and hold the image to save it.'); return false; }
+  try{ await S.dl.save({filename:`${BADGES[k].n.replace(/\s+/g,'-').toLowerCase()}-movie-night.png`, data:dataUrlBytes(img)}); return true; }
+  catch(e){ if(e&&e.code!=='declined') toast('Couldn’t save the image here. Press and hold it to save instead.'); return false; }
+}
+async function badgeAction(a, k, el){
+  const x=currentBadgeCtx();
+  if(a==='copycap'){ toast(await copyText(captionFor(k,x,false)+'\n'+SHARE_URL)?'Caption copied':'Couldn’t copy. Select the caption text instead.'); }
+  else if(a==='sharelink'){ copyText(captionFor(k,x,false)+'\n'+SHARE_URL); toast('Draft opened. Caption also copied in case you need it.'); }
+  else if(a==='letterboxd'){ toast(await copyText(letterboxdReview(k,x))?'Review copied. Paste it when you log the film.':'Letterboxd opened in a new tab.'); }
+  else if(a==='copyimg'){
+    const img=badgeImg(k,x);
+    try{ await navigator.clipboard.write([new ClipboardItem({'image/png': new Blob([dataUrlBytes(img)],{type:'image/png'})})]); toast('Image copied. Paste it into any post.'); }
+    catch{ toast('This browser won’t copy images. Use Save image instead.'); }
+  }
+  else if(a==='savebadge'){ if(await saveBadge(k,x)) toast('Badge saved'); }
+  else if(a==='insta'){
+    const net=el.dataset.net||'Instagram';
+    const copied=await copyText(captionFor(k,x,false)+'\n'+SHARE_URL);
+    const saved=await saveBadge(k,x);
+    toast(saved ? `Image saved${copied?' and caption copied':''}. Open ${net} and post it.` : (copied?`Caption copied. Save the image, then post it on ${net}.`:`Save the image, then post it on ${net}.`));
+  }
+}
+
+/* ---------- swipe: drag the card right to nominate, left to pass ---------- */
+function wireSwipe(){
+  const card=document.getElementById('swipecard'); if(!card) return;
+  let x0=0, y0=0, dx=0, id=null, horiz=null;
+  const yes=card.querySelector('.stamp.yes'), no=card.querySelector('.stamp.no');
+  const paint=()=>{ card.style.transform=`translateX(${dx}px) rotate(${dx/18}deg)`; yes.style.opacity=Math.max(0,Math.min(1,dx/90)); no.style.opacity=Math.max(0,Math.min(1,-dx/90)); };
+  const end=commit=>{
+    S.ui.dragging=false; card.classList.remove('drag');
+    if(commit){ const dir=commit; card.style.transition='transform .22s ease-in'; card.style.transform=`translateX(${dir*innerWidth}px) rotate(${dir*24}deg)`;
+      setTimeout(()=>{ S.ui.pendingRender=false; dir>0 ? nominate(card.dataset.id) : (S.ui.deck++, render()); },200); }
+    else { card.style.transition='transform .2s ease-out'; dx=0; paint(); if(S.ui.pendingRender){ S.ui.pendingRender=false; setTimeout(render,210); } }
+  };
+  card.addEventListener('pointerdown',e=>{ if(e.button>0) return; id=e.pointerId; x0=e.clientX; y0=e.clientY; dx=0; horiz=null; card.style.transition='none'; });
+  card.addEventListener('pointermove',e=>{
+    if(e.pointerId!==id) return;
+    const mx=e.clientX-x0, my=e.clientY-y0;
+    if(horiz===null && Math.abs(mx)+Math.abs(my)>8){ horiz=Math.abs(mx)>Math.abs(my); if(horiz){ card.setPointerCapture(id); S.ui.dragging=true; card.classList.add('drag'); } }
+    if(horiz){ dx=mx; paint(); }
+  });
+  const up=e=>{ if(e.pointerId!==id) return; id=null; if(!horiz) return; end(dx>110?1:dx<-110?-1:0); };
+  card.addEventListener('pointerup',up); card.addEventListener('pointercancel',up);
+  card.addEventListener('keydown',e=>{ if(e.key==='ArrowRight'){ e.preventDefault(); end(1); } if(e.key==='ArrowLeft'){ e.preventDefault(); end(-1); } });
+}
+
+/* ---------- confetti ---------- */
+function confetti(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const c=$('#fx'), x=c.getContext('2d'); c.hidden=false;
+  const W=c.width=innerWidth*devicePixelRatio, H=c.height=innerHeight*devicePixelRatio;
+  const cols=['#FFC145','#FF6F59','#5CE1B0','#9CB8FF','#F4F0FF'];
+  const ps=Array.from({length:140},()=>({x:Math.random()*W,y:-Math.random()*H*.5,vx:(Math.random()-.5)*4,vy:2+Math.random()*5,s:(4+Math.random()*7)*devicePixelRatio,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:cols[Math.floor(Math.random()*cols.length)]}));
+  const t0=performance.now();
+  (function f(t){ x.clearRect(0,0,W,H);
+    ps.forEach(p=>{ p.x+=p.vx; p.y+=p.vy*devicePixelRatio; p.r+=p.vr; x.save(); x.translate(p.x,p.y); x.rotate(p.r); x.fillStyle=p.c; x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2); x.restore(); });
+    if(t-t0<3500) requestAnimationFrame(f); else { x.clearRect(0,0,W,H); c.hidden=true; } })(t0);
+}
+
+/* ---------- boot ---------- */
+(function boot(){
+  let local=lsGet('wswt-pid'); if(!local){ local='p-'+rid(10); lsSet('wswt-pid',local); }
+  S.me.id=local;
+  render();
+  if(!window.claude||!window.claude.use) return;
+  window.claude.use('downloads').then(d=>{ S.dl=d; }).catch(()=>{});
+  window.claude.use('assets').then(a=>{ S.assets=a; render(); }).catch(()=>{});
+  Promise.all([window.claude.use('db'), window.claude.use('user')]).then(async ([db,user])=>{
+    if(!db) return;
+    let uid=null; try{ uid = user ? await user.id() : null; }catch{}
+    if(uid && /^[A-Za-z0-9_\-.~:@+]{1,180}$/.test(uid)){ S.me.id=uid; S.uidOk=true; }
+    if(S.code){ watchArtFrom(db); return; } // already playing locally; keep that game
+    S.db=db; S.mode='live'; watchArt(); render();
+    const sess=lsGet('wswt-session');
+    if(sess&&sess.mode==='live'&&sess.code){
+      const g=await db.doc('games/'+sess.code).get().catch(()=>null);
+      const me=g&&g.exists ? await db.doc('games/'+sess.code+'/players/'+S.me.id).get().catch(()=>null) : null;
+      if(me&&me.exists&&!S.code) subscribe(sess.code);
+    }
+  }).catch(()=>{});
+})();
+</script>
+
+</body></html>
