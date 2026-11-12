@@ -35,7 +35,7 @@ const ANGEL_COMPANIES = /^(angel studios|vidangel studios)$/i;
 /* ---------- TMDB client ---------- */
 const isV3Key = /^[0-9a-f]{32}$/i.test(TOKEN);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-async function tmdb(path, params = {}) {
+export async function tmdb(path, params = {}) {
   const url = new URL(BASE + path);
   for (const [k, v] of Object.entries(params)) if (v !== undefined && v !== null && v !== '') url.searchParams.set(k, v);
   if (isV3Key) url.searchParams.set('api_key', TOKEN);
@@ -52,7 +52,7 @@ async function tmdb(path, params = {}) {
   }
   throw new Error(`TMDB kept rate-limiting ${path}`);
 }
-async function allPages(path, params, max = 20) {
+export async function allPages(path, params, max = 20) {
   const out = [];
   for (let page = 1; page <= max; page++) {
     const r = await tmdb(path, { ...params, page });
@@ -66,8 +66,8 @@ async function allPages(path, params, max = 20) {
 /* ---------- the game's hand-curated lineup (seeds) ---------- */
 function readSeeds() {
   const html = readFileSync(resolve(ROOT, 'index.html'), 'utf8');
-  const m = html.match(/const CATALOG = (\[[\s\S]*?\n\]);/);
-  if (!m) throw new Error('Could not find CATALOG in index.html');
+  const m = html.match(/const ANGEL = (\[[\s\S]*?\n\]);/);
+  if (!m) throw new Error('Could not find the ANGEL lineup in index.html');
   return Function('"use strict";return (' + m[1] + ')')();
 }
 
@@ -125,6 +125,9 @@ export function mapTitle(d, type) {
   if (trueStory) g.push('true');
   if (faith) g.push('faith');
   if (has(G.documentary, G.tvNews, G.tvReality) || has(G.music) && !has(G.drama)) g.push('docs');
+  if (has(G.scifi, G.fantasy, G.tvSciFiFantasy)) g.push('scifi');
+  if (has(G.horror)) g.push('horror');
+  if (has(G.romance)) g.push('romance');
   if (!g.length) g.push('drama');
 
   // mood tags, weighted so the strongest signal comes first
@@ -132,6 +135,7 @@ export function mapTitle(d, type) {
   const add = (t, n) => { w[t] = (w[t] || 0) + n; };
   if (has(G.comedy) || standup) add('funny', standup ? 3 : 2);
   if (has(G.thriller, G.action, G.crime, G.mystery, G.horror, G.war, G.tvActionAdventure)) add('thrill', 2);
+  if (has(G.horror)) add('scare', 2.5);
   if (has(G.adventure, G.fantasy, G.scifi, G.western, G.tvSciFiFantasy)) add('adventure', 2);
   if (has(G.documentary, G.history) || trueStory) add('learn', has(G.documentary) ? 2 : 1);
   if (kwHas(kws, ...UPLIFT) || trueStory) add('inspire', 1.5);
@@ -176,8 +180,8 @@ export function mapTitle(d, type) {
 
 /* ---------- lookups ---------- */
 const norm = s => String(s).toLowerCase().normalize('NFKD').replace(/[’']/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
-async function details(type, id) {
-  const extra = type === 'tv' ? 'keywords,aggregate_credits,content_ratings' : 'keywords,credits,release_dates';
+export async function details(type, id, more = '') {
+  const extra = (type === 'tv' ? 'keywords,aggregate_credits,content_ratings' : 'keywords,credits,release_dates') + (more ? ',' + more : '');
   return tmdb(`/${type}/${id}`, { append_to_response: extra, language: 'en-US' });
 }
 async function findSeed(seed) {
