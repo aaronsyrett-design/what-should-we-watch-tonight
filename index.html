@@ -13,6 +13,12 @@
   --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
   color-scheme:dark;
 }
+/* Universal edition skin: midnight blue, popcorn yellow, cherry red, screen teal. Angel edition keeps the purple night above. */
+:root[data-ed=open]{
+  --night:#0B1020; --panel:#141B31; --panel2:#1C2540; --line:#2C3758;
+  --ink:#EEF2FF; --muted:#9BA6C9; --gold:#FFD23F; --coral:#FF5A6E; --mint:#3DDBC4;
+}
+:root[data-ed=open] body{background-image:radial-gradient(ellipse 80% 50% at 50% -10%, #1f3270 0%, transparent 70%)}
 html,body{min-height:100%}
 body{background:var(--night);color:var(--ink);font:16px/1.5 var(--body);
   background-image:radial-gradient(ellipse 80% 50% at 50% -10%, #3a2a6e 0%, transparent 70%);
@@ -225,6 +231,20 @@ h3{font:800 28px/1 var(--display);text-transform:uppercase;margin:0;color:var(--
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--night);
   padding:12px 16px;border-radius:12px;font-weight:600;font-size:14px;max-width:min(90vw,460px);z-index:20;box-shadow:0 8px 30px rgba(0,0,0,.4)}
 canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:15;width:100%;height:100%}
+.edpill{display:inline-block;font:700 10.5px/1 var(--body);letter-spacing:.08em;padding:4px 7px;border-radius:99px;background:var(--gold);color:#22180A;vertical-align:3px;margin-left:4px}
+.svcs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.svc{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--panel2);border:1.5px solid var(--line);font-weight:600;font-size:15px;text-align:left;min-width:0}
+.svc span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.svc[aria-pressed=true]{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 14%,var(--panel2))}
+.svc[aria-pressed=false] .svclogo{filter:grayscale(.6);opacity:.75}
+.svclogo{width:28px;height:28px;border-radius:7px;flex:none;object-fit:cover;display:inline-grid;place-items:center;font:800 14px/1 var(--body);color:#fff}
+.svccount{color:var(--mint);font-weight:600}
+.svccount.warn{color:var(--coral)}
+.where{font:600 13px/1.2 var(--body);color:var(--ink);opacity:.85}
+.svcrow{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.svcchip{display:inline-flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;border-radius:99px;background:var(--panel2);border:1.5px solid var(--line);font-weight:600;font-size:14px}
+.svcchip .svclogo{width:22px;height:22px;border-radius:50%;font-size:11px}
+.svcchip.yours{border-color:var(--mint)}
 .pulse{animation:pulse 1.6s ease-in-out infinite}
 @keyframes pulse{50%{opacity:.45}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -235,8 +255,8 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:15;width:100%;heigh
 <canvas id="fx" hidden></canvas>
 
 <script>
-/* ---------- Sample Angel lineup (hand-curated, not a live catalog feed) ---------- */
-const CATALOG = [
+/* ---------- Angel Studios edition lineup (hand-curated, refreshed from TMDB when served over the web) ---------- */
+const ANGEL = [
   {id:'sof',age:'teen',t:'Sound of Freedom',k:'Movie',y:2023,g:['thriller','true'],tags:['thrill','inspire','cry'],i:5,len:'movie',cast:['Jim Caviezel'],b:'A federal agent goes off the books to rescue kids from traffickers. Tense and heavy.'},
   {id:'onlyson',age:'teen',t:'His Only Son',k:'Movie',y:2023,g:['faith','drama'],tags:['faith','cry','epic'],i:3,len:'movie',cast:[],b:'Abraham’s journey up the mountain with Isaac, staged as a sweeping desert drama.'},
   {id:'cabrini',age:'teen',t:'Cabrini',k:'Movie',y:2024,g:['true','drama'],tags:['inspire','learn','heart'],i:3,len:'epic',cast:['Cristiana Dell’Anna','John Lithgow'],b:'An Italian nun takes on 1889 New York to build homes for immigrant orphans.'},
@@ -288,6 +308,95 @@ const CATALOG = [
   {id:'chrisclarke',age:'teen',t:'Chris Clarke: American-Born Jamaican Parents',k:'Special',y:2025,g:['comedy'],tags:['funny','cozy'],i:1,len:'short',cast:['Chris Clarke'],b:'Chris Clarke on growing up American with very Jamaican parents.'},
   {id:'moniquemarvez',age:'teen',t:'Monique Marvez: The 1900s Rocked',k:'Special',y:2025,g:['comedy'],tags:['funny','cozy'],i:1,len:'short',cast:['Monique Marvez'],b:'Monique Marvez makes the case that life before smartphones was better, and funnier.'}
 ];
+/* ---------- Everything-streaming starter lineup ----------
+   Well-loved titles so the universal edition plays anywhere, even offline. When the page is served over the
+   web it is replaced by data/universal.json (refreshed daily from TMDB), which also knows where each title streams. */
+const STARTER = [
+  {id:'u-paddington2',age:'all',t:'Paddington 2',k:'Movie',y:2017,g:['family','comedy'],tags:['family','funny','heart','cozy'],i:1,len:'movie',cast:['Ben Whishaw','Hugh Grant','Sally Hawkins'],b:'A polite bear, a stolen pop-up book and a prison that has never had better marmalade.'},
+  {id:'u-spiderverse',age:'kids',t:'Spider-Man: Into the Spider-Verse',k:'Animated',y:2018,g:['family','scifi','thriller'],tags:['adventure','funny','inspire'],i:2,len:'movie',cast:['Shameik Moore','Hailee Steinfeld','Jake Johnson'],b:'Brooklyn teen Miles Morales learns he is not the only Spider-Person. Wildly inventive animation.'},
+  {id:'u-princessbride',age:'kids',t:'The Princess Bride',k:'Movie',y:1987,g:['comedy','romance','scifi'],tags:['adventure','funny','heart','cozy'],i:1,len:'movie',cast:['Cary Elwes','Robin Wright','Mandy Patinkin'],b:'Fencing, fighting, true love and a giant. The bedtime story every generation agrees on.'},
+  {id:'u-coco',age:'all',t:'Coco',k:'Animated',y:2017,g:['family'],tags:['heart','cry','family'],i:2,len:'movie',cast:['Anthony Gonzalez','Gael García Bernal'],b:'A boy who dreams of music crosses into the Land of the Dead to find his family’s story.'},
+  {id:'u-insideout',age:'all',t:'Inside Out',k:'Animated',y:2015,g:['family','comedy'],tags:['heart','funny','family','cry'],i:1,len:'movie',cast:['Amy Poehler','Phyllis Smith','Bill Hader'],b:'The feelings inside an 11-year-old’s head scramble when her family moves across the country.'},
+  {id:'u-toystory',age:'all',t:'Toy Story',k:'Animated',y:1995,g:['family','comedy'],tags:['funny','family','adventure'],i:1,len:'movie',cast:['Tom Hanks','Tim Allen'],b:'A cowboy doll’s life is upended by a flashy new space ranger. Where it all started.'},
+  {id:'u-mario',age:'all',t:'The Super Mario Bros. Movie',k:'Animated',y:2023,g:['family','comedy'],tags:['funny','adventure','family'],i:1,len:'movie',cast:['Chris Pratt','Anya Taylor-Joy','Jack Black'],b:'A Brooklyn plumber falls into the Mushroom Kingdom. Bright, fast and full of easter eggs.'},
+  {id:'u-moana',age:'all',t:'Moana',k:'Animated',y:2016,g:['family'],tags:['adventure','family','inspire'],i:1,len:'movie',cast:['Auli’i Cravalho','Dwayne Johnson'],b:'A chief’s daughter sails past the reef with a demigod to save her island. Big songs.'},
+  {id:'u-elf',age:'kids',t:'Elf',k:'Movie',y:2003,g:['comedy','family'],tags:['funny','cozy','family'],i:1,len:'movie',cast:['Will Ferrell','Zooey Deschanel','James Caan'],b:'A human raised by elves heads to New York to find his dad. Smiling is his favorite.'},
+  {id:'u-bluey',age:'all',t:'Bluey',k:'Series',y:2018,g:['family','comedy'],tags:['funny','family','cozy','heart'],i:1,len:'short',cast:[],b:'A Blue Heeler pup turns everyday family life into games. Seven-minute episodes that land with grown-ups too.'},
+  {id:'u-backtothefuture',age:'kids',t:'Back to the Future',k:'Movie',y:1985,g:['scifi','comedy'],tags:['adventure','funny'],i:2,len:'movie',cast:['Michael J. Fox','Christopher Lloyd'],b:'A teenager lands in 1955 in a time-traveling DeLorean and has to get his parents together.'},
+  {id:'u-jurassicpark',age:'teen',t:'Jurassic Park',k:'Movie',y:1993,g:['scifi','thriller'],tags:['thrill','adventure','epic'],i:3,len:'movie',cast:['Sam Neill','Laura Dern','Jeff Goldblum'],b:'A theme park of cloned dinosaurs. What could go wrong?'},
+  {id:'u-jumanji',age:'teen',t:'Jumanji: Welcome to the Jungle',k:'Movie',y:2017,g:['comedy','scifi'],tags:['funny','adventure'],i:2,len:'movie',cast:['Dwayne Johnson','Kevin Hart','Jack Black','Karen Gillan'],b:'Four teens get sucked into a video game as very unlikely avatars.'},
+  {id:'u-topgun',age:'teen',t:'Top Gun: Maverick',k:'Movie',y:2022,g:['thriller'],tags:['thrill','epic','inspire'],i:3,len:'movie',cast:['Tom Cruise','Miles Teller','Jennifer Connelly'],b:'Maverick trains a new class of pilots for an impossible mission. Built for the loudest speakers you own.'},
+  {id:'u-knivesout',age:'teen',t:'Knives Out',k:'Movie',y:2019,g:['thriller','comedy'],tags:['thrill','funny'],i:3,len:'movie',cast:['Daniel Craig','Ana de Armas','Chris Evans'],b:'A famous mystery writer dies after his birthday party, and every relative has a motive.'},
+  {id:'u-dune2',age:'teen',t:'Dune: Part Two',k:'Movie',y:2024,g:['scifi'],tags:['epic','adventure','thrill'],i:4,len:'epic',cast:['Timothée Chalamet','Zendaya','Austin Butler'],b:'Paul Atreides joins the Fremen and wages war on the empire. Sand, worms and spectacle.'},
+  {id:'u-lotr',age:'teen',t:'The Lord of the Rings: The Fellowship of the Ring',k:'Movie',y:2001,g:['scifi'],tags:['adventure','epic','heart'],i:3,len:'epic',cast:['Elijah Wood','Ian McKellen','Viggo Mortensen'],b:'A hobbit sets out to destroy a ring that could end the world. The gold standard of epic.'},
+  {id:'u-mandalorian',age:'teen',t:'The Mandalorian',k:'Series',y:2019,g:['scifi','thriller'],tags:['adventure','thrill'],i:3,len:'short',cast:['Pedro Pascal'],b:'A lone bounty hunter and a small green foundling on the edges of the galaxy.'},
+  {id:'u-strangerthings',age:'teen',t:'Stranger Things',k:'Series',y:2016,g:['scifi','horror'],tags:['thrill','adventure','scare'],i:3,len:'short',cast:['Millie Bobby Brown','David Harbour','Winona Ryder'],b:'Small-town kids, a missing friend and a girl with powers. 80s nostalgia with real monsters.'},
+  {id:'u-matrix',age:'adult',t:'The Matrix',k:'Movie',y:1999,g:['scifi','thriller'],tags:['thrill','adventure'],i:4,len:'movie',cast:['Keanu Reeves','Carrie-Anne Moss','Laurence Fishburne'],b:'A hacker learns the world is a simulation. Red pill or blue pill?'},
+  {id:'u-johnwick',age:'adult',t:'John Wick',k:'Movie',y:2014,g:['thriller'],tags:['thrill'],i:5,len:'movie',cast:['Keanu Reeves','Willem Dafoe'],b:'A retired hitman comes back for the people who took his dog. Relentless and stylish.'},
+  {id:'u-madmax',age:'adult',t:'Mad Max: Fury Road',k:'Movie',y:2015,g:['scifi','thriller'],tags:['thrill','adventure','epic'],i:5,len:'movie',cast:['Tom Hardy','Charlize Theron'],b:'One long, glorious chase across a desert wasteland.'},
+  {id:'u-quietplace',age:'teen',t:'A Quiet Place',k:'Movie',y:2018,g:['horror','thriller'],tags:['scare','thrill','heart'],i:4,len:'movie',cast:['Emily Blunt','John Krasinski'],b:'A family survives by never making a sound. You will hold your breath for 90 minutes.'},
+  {id:'u-getout',age:'adult',t:'Get Out',k:'Movie',y:2017,g:['horror','thriller'],tags:['scare','thrill','learn'],i:4,len:'movie',cast:['Daniel Kaluuya','Allison Williams'],b:'Meeting the girlfriend’s parents goes from awkward to terrifying.'},
+  {id:'u-conjuring',age:'adult',t:'The Conjuring',k:'Movie',y:2013,g:['horror'],tags:['scare','thrill'],i:5,len:'movie',cast:['Vera Farmiga','Patrick Wilson'],b:'Paranormal investigators help a family in a farmhouse with something in the basement.'},
+  {id:'u-crazyrich',age:'teen',t:'Crazy Rich Asians',k:'Movie',y:2018,g:['comedy','romance'],tags:['funny','heart','cozy'],i:1,len:'movie',cast:['Constance Wu','Henry Golding','Michelle Yeoh'],b:'A professor meets her boyfriend’s family in Singapore and learns they are very, very rich.'},
+  {id:'u-harrysally',age:'adult',t:'When Harry Met Sally...',k:'Movie',y:1989,g:['comedy','romance'],tags:['funny','heart','cozy'],i:1,len:'movie',cast:['Billy Crystal','Meg Ryan'],b:'Can men and women be friends? Twelve years of trying to answer it.'},
+  {id:'u-prideprejudice',age:'kids',t:'Pride & Prejudice',k:'Movie',y:2005,g:['romance','drama'],tags:['heart','cozy'],i:1,len:'movie',cast:['Keira Knightley','Matthew Macfadyen'],b:'Elizabeth Bennet and Mr. Darcy misjudge each other beautifully.'},
+  {id:'u-notebook',age:'teen',t:'The Notebook',k:'Movie',y:2004,g:['romance','drama'],tags:['cry','heart'],i:3,len:'movie',cast:['Ryan Gosling','Rachel McAdams'],b:'A summer romance in the 1940s, told from a nursing home decades later. Tissues required.'},
+  {id:'u-littlewomen',age:'kids',t:'Little Women',k:'Movie',y:2019,g:['drama','romance'],tags:['heart','cry','cozy'],i:2,len:'movie',cast:['Saoirse Ronan','Florence Pugh','Meryl Streep'],b:'The four March sisters grow up, fall out and find their own ways.'},
+  {id:'u-barbie',age:'teen',t:'Barbie',k:'Movie',y:2023,g:['comedy'],tags:['funny','heart'],i:2,len:'movie',cast:['Margot Robbie','Ryan Gosling'],b:'Barbie leaves Barbieland for the real world. Funnier and sharper than you expect.'},
+  {id:'u-bridesmaids',age:'adult',t:'Bridesmaids',k:'Movie',y:2011,g:['comedy'],tags:['funny','heart'],i:2,len:'movie',cast:['Kristen Wiig','Maya Rudolph','Melissa McCarthy'],b:'A maid of honor’s life unravels as the wedding plans spiral.'},
+  {id:'u-spy',age:'adult',t:'Spy',k:'Movie',y:2015,g:['comedy','thriller'],tags:['funny','thrill'],i:3,len:'movie',cast:['Melissa McCarthy','Jason Statham','Rose Byrne'],b:'A desk-bound CIA analyst goes undercover and turns out to be great at it.'},
+  {id:'u-deadpool',age:'adult',t:'Deadpool',k:'Movie',y:2016,g:['comedy','thriller'],tags:['funny','thrill'],i:4,len:'movie',cast:['Ryan Reynolds','Morena Baccarin'],b:'A wisecracking mercenary with healing powers hunts the man who ruined his face.'},
+  {id:'u-free-guy',age:'teen',t:'Free Guy',k:'Movie',y:2021,g:['comedy','scifi'],tags:['funny','adventure','heart'],i:2,len:'movie',cast:['Ryan Reynolds','Jodie Comer'],b:'A background character in a video game decides to become the hero.'},
+  {id:'u-eeaao',age:'adult',t:'Everything Everywhere All at Once',k:'Movie',y:2022,g:['scifi','comedy','drama'],tags:['adventure','funny','cry'],i:3,len:'movie',cast:['Michelle Yeoh','Ke Huy Quan','Jamie Lee Curtis'],b:'A laundromat owner with a tax audit has to save the multiverse. Hot dog fingers included.'},
+  {id:'u-office',age:'teen',t:'The Office',k:'Series',y:2005,g:['comedy'],tags:['funny','cozy'],i:1,len:'short',cast:['Steve Carell','John Krasinski','Jenna Fischer'],b:'A paper company, a terrible boss and a documentary crew catching all of it.'},
+  {id:'u-tedlasso',age:'adult',t:'Ted Lasso',k:'Series',y:2020,g:['comedy','drama'],tags:['funny','heart','inspire'],i:2,len:'short',cast:['Jason Sudeikis','Hannah Waddingham','Brett Goldstein'],b:'An American football coach takes over an English soccer club with nothing but optimism.'},
+  {id:'u-lastofus',age:'adult',t:'The Last of Us',k:'Series',y:2023,g:['drama','horror','scifi'],tags:['thrill','cry','scare'],i:5,len:'short',cast:['Pedro Pascal','Bella Ramsey'],b:'A smuggler escorts a teenage girl across a ruined America. Brutal and tender.'},
+  {id:'u-shawshank',age:'adult',t:'The Shawshank Redemption',k:'Movie',y:1994,g:['drama'],tags:['inspire','cry','heart'],i:4,len:'epic',cast:['Tim Robbins','Morgan Freeman'],b:'Two prisoners build a friendship over decades. Hope is a good thing.'},
+  {id:'u-forrestgump',age:'teen',t:'Forrest Gump',k:'Movie',y:1994,g:['drama','comedy'],tags:['heart','cry','funny','epic'],i:3,len:'epic',cast:['Tom Hanks','Robin Wright','Gary Sinise'],b:'A kind man from Alabama stumbles through 30 years of American history.'},
+  {id:'u-hiddenfigures',age:'kids',t:'Hidden Figures',k:'Movie',y:2016,g:['true','drama'],tags:['inspire','learn','heart'],i:2,len:'movie',cast:['Taraji P. Henson','Octavia Spencer','Janelle Monáe'],b:'The Black women mathematicians at NASA who got John Glenn into orbit.'},
+  {id:'u-apollo13',age:'kids',t:'Apollo 13',k:'Movie',y:1995,g:['true','thriller'],tags:['thrill','inspire','learn'],i:3,len:'epic',cast:['Tom Hanks','Kevin Bacon','Ed Harris'],b:'Houston, we have a problem. The true story of getting three astronauts home.'},
+  {id:'u-blindside',age:'teen',t:'The Blind Side',k:'Movie',y:2009,g:['true','drama'],tags:['inspire','heart'],i:2,len:'movie',cast:['Sandra Bullock','Quinton Aaron'],b:'A family takes in a homeless teen who becomes an NFL first-round pick.'},
+  {id:'u-oppenheimer',age:'adult',t:'Oppenheimer',k:'Movie',y:2023,g:['true','drama'],tags:['learn','epic','thrill'],i:4,len:'epic',cast:['Cillian Murphy','Emily Blunt','Robert Downey Jr.'],b:'The physicist behind the atomic bomb, and what it cost him.'},
+  {id:'u-freesolo',age:'teen',t:'Free Solo',k:'Documentary',y:2018,g:['docs','true'],tags:['thrill','learn','inspire'],i:3,len:'movie',cast:['Alex Honnold'],b:'One man climbs El Capitan with no ropes. Your palms will sweat.'},
+  {id:'u-octopus',age:'all',t:'My Octopus Teacher',k:'Documentary',y:2020,g:['docs'],tags:['learn','heart','cozy'],i:1,len:'movie',cast:['Craig Foster'],b:'A filmmaker befriends an octopus in a South African kelp forest.'},
+  {id:'u-planetearth2',age:'all',t:'Planet Earth II',k:'Series',y:2016,g:['docs'],tags:['learn','epic','cozy'],i:1,len:'short',cast:['David Attenborough'],b:'Snakes chase baby iguanas. Snow leopards hunt. The planet, in stunning detail.'}
+];
+/* The game state's catalog for the current edition. Filled by applyEdition(). */
+const CATALOG = [];
+const UNIV = {titles:STARTER, loaded:false, notice:'', region:'US'};
+/* Streaming services a host can tick. Logos arrive with data/universal.json. */
+let SERVICES = [
+  {key:'netflix',n:'Netflix'},{key:'prime',n:'Prime Video'},{key:'disney',n:'Disney+'},{key:'max',n:'Max'},{key:'hulu',n:'Hulu'},
+  {key:'apple',n:'Apple TV+'},{key:'peacock',n:'Peacock'},{key:'paramount',n:'Paramount+'},{key:'angel',n:'Angel Studios'},{key:'free',n:'Free with ads'}];
+const SVC_COLOR = {netflix:'#E50914',prime:'#1A98FF',disney:'#113CCF',max:'#002BE7',hulu:'#1CE783',apple:'#A2AAAD',peacock:'#F9C300',paramount:'#0064FF',angel:'#F2B544',free:'#7A5CFA'};
+const svcName = k => (SERVICES.find(s=>s.key===k)||{n:k}).n;
+
+/* ---------- editions ----------
+   "open" is the universal game: every title on TMDB that streams in the US, filtered to the room's services.
+   "angel" is the Angel Studios edition: Angel's lineup, Guild hosting and Angel branding. Studio editions
+   are a skin plus a catalog, so another studio could slot in the same way. */
+const EDITIONS = {
+  open:{key:'open', label:'Everything streaming', sub:'Every major service. Only pitches what your room can press play on.',
+    lineupWord:'titles', shareUrl:()=>/^https?:$/.test(location.protocol)?location.origin+location.pathname:'',
+    tags:'#WhatShouldWeWatchTonight #MovieNight', badgeFoot:'Settle movie night with a bracket', badgeBg:['#16213f','#0a0f1d'], badgeLine:'#2E3A5E', badgeInk:'#0D1222'},
+  angel:{key:'angel', label:'Angel Studios edition', sub:'Angel’s lineup, Guild hosting and Angel branding.',
+    lineupWord:'Angel titles', shareUrl:()=>'https://www.angel.com/guild',
+    tags:'#WhatShouldWeWatchTonight #MovieNight #AngelGuild', badgeFoot:'Settle your movie night on Angel · angel.com/guild', badgeBg:['#2a1f57','#120e24'], badgeLine:'#3D3570', badgeInk:'#15112A'}
+};
+let EDITION = null;
+const ED = () => EDITIONS[EDITION||'open'];
+const isAngel = () => EDITION==='angel';
+function editionFromUrl(){ try{ const v=new URLSearchParams(location.search).get('edition'); return v==='angel'||v==='open'?v:null; }catch{ return null; } }
+function applyEdition(ed){
+  ed = ed==='angel' ? 'angel' : 'open';
+  const list = ed==='angel' ? ANGEL : UNIV.titles;
+  if(ed===EDITION && CATALOG.length===list.length && CATALOG[0]===list[0]) return;
+  EDITION=ed; document.documentElement.dataset.ed=ed;
+  CATALOG.splice(0, CATALOG.length, ...list);
+  list.forEach(c=>{ BY_ID[c.id]=c; });
+  Q=makeQ(ed); rankCache.clear(); poolCache.key=null;
+  if(S.ui.qi>=Q.length) S.ui.qi=0;
+}
 /* "Who would you hang out with?" Each actor reads as a personality: those tags feed the profile, and their own titles get a direct boost. */
 const ACTORS = {
   kevin:{n:'Kevin James',s:'Easy laughs, zero pretense',tags:['funny','cozy'],read:'Kevin James as your hang means you want easy laughs, not homework.'},
@@ -297,9 +406,19 @@ const ACTORS = {
   neal:{n:'Neal McDonough',s:'Tough guy, soft heart',tags:['heart','thrill'],read:'Neal McDonough says grit with a soft center. Underdog stories get a bump.'},
   levi:{n:'Zachary Levi',s:'Big kid at heart',tags:['funny','heart','adventure'],read:'Zachary Levi says you want fun with a big heart, maybe a redemption story.'},
   woody:{n:'Woody Harrelson',s:'Wild stories, sharp mind',tags:['funny','learn'],read:'Woody Harrelson says smart and a little strange. Ideas with a wink.'},
-  kingsley:{n:'Ben Kingsley',s:'History over a cup of tea',tags:['learn','epic'],read:'Ben Kingsley says you’d take substance over popcorn. Big stories rank higher.'}
+  kingsley:{n:'Ben Kingsley',s:'History over a cup of tea',tags:['learn','epic'],read:'Ben Kingsley says you’d take substance over popcorn. Big stories rank higher.'},
+  /* universal edition */
+  hanks:{ed:'open',n:'Tom Hanks',s:'Everybody’s favorite dad',tags:['heart','inspire'],read:'Tom Hanks says you want something warm that leaves you a little better off.'},
+  reynolds:{ed:'open',n:'Ryan Reynolds',s:'Never not joking',tags:['funny','adventure'],read:'Ryan Reynolds says you want quick laughs with a bit of action.'},
+  rock:{ed:'open',n:'Dwayne Johnson',s:'Big energy, bigger heart',tags:['thrill','funny','family'],read:'Dwayne Johnson says go big and fun. Crowd-pleasers climb your list.'},
+  pascal:{ed:'open',n:'Pedro Pascal',s:'Tough outside, total softie',tags:['adventure','heart','thrill'],read:'Pedro Pascal says grit with a soft center. Found-family stories get a bump.'},
+  keanu:{ed:'open',n:'Keanu Reeves',s:'Quiet, kind, can handle himself',tags:['thrill','adventure'],read:'Keanu Reeves says you want momentum. Action and big worlds rise up.'},
+  streep:{ed:'open',n:'Meryl Streep',s:'Every story, done right',tags:['heart','cry','learn'],read:'Meryl Streep says you want great acting and real feelings over popcorn.'},
+  mccarthy:{ed:'open',n:'Melissa McCarthy',s:'Chaos with a big heart',tags:['funny','cozy'],read:'Melissa McCarthy says you want to laugh until it hurts. Comedies jump the line.'},
+  attenborough:{ed:'open',n:'David Attenborough',s:'Tea and the whole planet',tags:['learn','epic','cozy'],read:'David Attenborough says you’d rather be amazed than shocked. Real stories rank higher.'}
 };
-const BY_ID = Object.fromEntries(CATALOG.map(c=>[c.id,c]));
+const actorsFor = ed => Object.entries(ACTORS).filter(([,a])=>(a.ed||'angel')===ed);
+const BY_ID = Object.fromEntries([...ANGEL,...STARTER].map(c=>[c.id,c]));
 /* Who's in the room. The host sets it; every suggestion, wildcard and bracket slot respects it. */
 const AUDIENCE = {
   little:{n:'Little kids too',s:'Under 8 in the room',ok:['all'],label:'all ages'},
@@ -333,13 +452,60 @@ async function loadLineup(){
     const c={id:x.id,t:String(x.t),y:x.y||'',k:x.k||'Movie',age:AGES.includes(x.age)?x.age:'teen',g:Array.isArray(x.g)?x.g:['drama'],tags:x.tags,
       i:Math.max(1,Math.min(5,Number(x.i)||3)),len:LENS.includes(x.len)?x.len:'movie',cast:Array.isArray(x.cast)?x.cast.slice(0,4):[],
       b:x.b||'New on Angel.',poster:x.poster||null,keywords:x.keywords||[],synced:true};
-    CATALOG.push(c); BY_ID[c.id]=c; LINEUP.added++;
+    ANGEL.push(c); BY_ID[c.id]=c; LINEUP.added++;
   });
   LINEUP.loaded=true; LINEUP.notice=doc.notice||'';
-  rankCache.clear();
+  if(isAngel()){ EDITION=null; applyEdition('angel'); }
   render();
 }
-const fits = item => { const a=AUDIENCE[(S.game&&S.game.audience)||'adults']; return !item.age || a.ok.includes(item.age); };
+/* data/universal.json: the everything-streaming lineup with where each title streams (TMDB + JustWatch). */
+async function loadUniversal(){
+  if(!/^https?:$/.test(location.protocol)) return;
+  let doc; try{ const r=await fetch('data/universal.json',{cache:'no-cache'}); if(!r.ok) return; doc=await r.json(); }catch{ return; }
+  if(!doc||!Array.isArray(doc.titles)) return;
+  const AGES=['all','kids','teen','adult'], LENS=['short','movie','epic'], keys=new Set(SERVICES.map(s=>s.key));
+  const list=[];
+  doc.titles.forEach(x=>{
+    if(!x||!x.id||!x.t||!Array.isArray(x.tags)||!x.tags.length) return;
+    list.push({id:String(x.id),t:String(x.t),y:x.y||'',k:x.k||'Movie',age:AGES.includes(x.age)?x.age:'teen',g:Array.isArray(x.g)?x.g:['drama'],tags:x.tags,
+      i:Math.max(1,Math.min(5,Number(x.i)||3)),len:LENS.includes(x.len)?x.len:'movie',cast:Array.isArray(x.cast)?x.cast.slice(0,4):[],
+      b:x.b||'',poster:x.poster||null,tmdb:x.tmdb||null,on:Array.isArray(x.on)?x.on.filter(k=>keys.has(k)):[],rent:!!x.rent,synced:true});
+  });
+  if(list.length<20) return; // too thin to play; keep the starter lineup
+  if(Array.isArray(doc.services)) doc.services.forEach(d=>{ const s=SERVICES.find(x=>x.key===d.key); if(s&&d.logo) s.logo=d.logo; });
+  UNIV.titles=list; UNIV.loaded=true; UNIV.notice=doc.notice||''; UNIV.region=doc.region||'US';
+  list.forEach(c=>{ BY_ID[c.id]=c; });
+  if(!isAngel()){ EDITION=null; applyEdition('open'); }
+  render();
+}
+/* A title fits when it suits the youngest person in the room and (universal edition) streams on a service
+   the room has, or can be rented when the host allows it. Titles with no streaming data always pass. */
+const ageOk = (item, audience) => { const a=AUDIENCE[audience||'adults']; return !item.age || a.ok.includes(item.age); };
+function streamsFor(item, services, rent){
+  if(EDITION!=='open'||!item||!Array.isArray(item.on)) return true;
+  if(!services||!services.length) return true;
+  return item.on.some(s=>services.includes(s)) || (!!rent && !!item.rent);
+}
+const fits = item => { const g=S.game||{}; return ageOk(item,g.audience) && streamsFor(item,g.services,g.rent); };
+const poolCache = {key:null, list:[]};
+function pool(){
+  const g=S.game||{}, key=[EDITION,CATALOG.length,UNIV.titles.length,g.audience,(g.services||[]).join(','),!!g.rent].join('|');
+  if(poolCache.key!==key){ poolCache.key=key; poolCache.list=CATALOG.filter(fits); rankCache.clear(); }
+  return poolCache.list;
+}
+/* Where a title streams, for the cards and the winner screen. Lists the room's services first. */
+function whereFor(item, g=S.game){
+  if(EDITION!=='open'||!item||!Array.isArray(item.on)) return null;
+  const sv=(g&&g.services)||[], mine=item.on.filter(k=>sv.includes(k)), other=item.on.filter(k=>!sv.includes(k));
+  return {mine, other, rent:!!item.rent};
+}
+function whereText(item, g=S.game){
+  const w=whereFor(item,g); if(!w) return '';
+  if(w.mine.length) return 'On '+w.mine.map(svcName).join(' · ');
+  if(w.other.length&&(!g||!(g.services||[]).length)) return 'On '+w.other.slice(0,3).map(svcName).join(' · ');
+  if(w.rent) return 'Rent or buy';
+  return w.other.length ? 'On '+w.other.slice(0,2).map(svcName).join(' · ') : '';
+}
 const OCCASIONS = {
   birthday:{n:'Birthday party',line:h=>h?`${h} is having a birthday party!`:'We’re having a birthday party!'},
   sleepover:{n:'Sleepover',line:h=>h?`${h} is hosting a sleepover!`:'Sleepover tonight!'},
@@ -483,16 +649,16 @@ const PAIRING = {
   theshift:['buffalo','Heat for a story that keeps turning up the pressure.'],
   wayfinders:['trail','Quest fuel for a fantasy adventure.']
 };
-const Q = [
+function makeQ(ed){ const open=ed!=='angel'; return [
   {key:'vibe', q:'How’s your energy right now?', multi:false, opts:[
     ['drained','Running on empty','Long day'],['cozy','Cozy, blanket mode','Snacks are ready'],
     ['restless','Restless','Need a jolt'],['fired','Fired up','Bring the big stuff'],
     ['feels','In my feels','A little tender'],['goofy','Goofy','Everything is funny']]},
   {key:'want', q:'What should tonight’s pick do to you?', multi:false, opts:[
     ['funny','Make me laugh',''],['cry','A good cry',''],['thrill','Get my pulse up',''],
-    ['learn','Teach me something real',''],['inspire','Lift me up',''],['adventure','Take me somewhere else','']]},
+    ['learn','Teach me something real',''],['inspire','Lift me up',''],['adventure','Take me somewhere else',''],...(open?[['scare','Scare me','']]:[])]},
   {key:'actor', q:'Out of these, who would you most want to hang out with?', sub:'Go with your gut. It tells us more than you’d think.', multi:false, optional:true, opts:
-    Object.entries(ACTORS).map(([k,a])=>[k,a.n,a.s])},
+    actorsFor(open?'open':'angel').map(([k,a])=>[k,a.n,a.s])},
   {key:'len', q:'How much time do we have?', multi:false, opts:[
     ['short','An episode or a special','Under an hour'],['movie','A regular movie','About two hours'],['any','We’ve got all night','Epics welcome']]},
   {key:'snack', q:'Pick a snack. Go.', sub:'This one matters more than you’d think.', multi:false, optional:true, opts:
@@ -501,10 +667,13 @@ const Q = [
     Object.entries(DRINKS).map(([k,v])=>[k,v.n,v.s])},
   {key:'playlist', q:'Road trip. What’s playing?', multi:false, optional:true, opts:
     Object.entries(PLAYLISTS).map(([k,v])=>[k,v.n,v.s])},
-  {key:'genres', q:'Any genres you’re craving?', sub:'Pick up to 3, or skip.', multi:3, opts:[
+  {key:'genres', q:'Any genres you’re craving?', sub:'Pick up to 3, or skip.', multi:3, opts: open ? [
+    ['comedy','Comedy',''],['drama','Drama',''],['thriller','Thriller & Action',''],['scifi','Sci-fi & Fantasy',''],['horror','Horror',''],
+    ['romance','Romance',''],['family','Animation & Family',''],['true','True Story & History',''],['docs','Docs & Unscripted','']] : [
     ['comedy','Comedy',''],['drama','Drama',''],['thriller','Thriller & Action',''],['family','Animation & Family',''],
     ['true','True Story & History',''],['faith','Faith',''],['docs','Docs & Unscripted','']]}
-];
+]; }
+let Q = makeQ('open');
 const VIBE_TAGS = {drained:['funny','cozy','family'],cozy:['heart','family','cozy'],restless:['thrill','adventure'],fired:['epic','inspire','thrill'],feels:['cry','heart'],goofy:['funny','family']};
 const VIBE_RANGE = {drained:[1,2],cozy:[1,3],restless:[3,5],fired:[3,5],feels:[2,4],goofy:[1,2]};
 const WANT_AVOID = {funny:5, adventure:6};  /* wanting a laugh or an escape: heavy titles (intensity >= value) get pushed down */
@@ -515,7 +684,7 @@ const VIBE_READ = {
   fired:'You’ve got energy to spare. Big swings are on the table.',
   feels:'You’re tender tonight. We’ll find something that hits the heart without wrecking you.',
   goofy:'Everything’s funny right now. We’ll protect that.'};
-const WANT_WORD = {funny:'laugh',cry:'have a good cry',thrill:'get their pulse up',learn:'learn something',inspire:'feel lifted',adventure:'escape'};
+const WANT_WORD = {scare:'get scared',funny:'laugh',cry:'have a good cry',thrill:'get their pulse up',learn:'learn something',inspire:'feel lifted',adventure:'escape'};
 const VIBE_WORD = {drained:'running on empty',cozy:'in cozy mode',restless:'restless',fired:'fired up',feels:'in their feels',goofy:'feeling goofy'};
 const BOT_NAMES = ['Grandma Jo','Uncle Rick','Skye','Mo','Tess','Dez','Pops','Lulu'];
 const AV_COLORS = ['#FFC145','#FF6F59','#5CE1B0','#9CB8FF','#F49CFF','#FFE08A','#8EF0D0','#FFA48F'];
@@ -557,7 +726,7 @@ function makeLocalDB(){
 const S = {
   mode:'local', db:makeLocalDB(), me:{id:null,name:''},
   code:null, game:null, players:[], unsubs:[],
-  ui:{screen:'home', name:lsGet('wswt-name')||'', expected:4, guild:false, audience:'kids', party:false, occasion:'birthday', honoree:'', when:'', email:'', emailOk:false, joinCode:'', qi:0, ans:{genres:[]}, deck:0, passed:[], custom:'', voted:{}},
+  ui:{screen:'home', name:lsGet('wswt-name')||'', expected:4, guild:false, audience:'kids', edition:'open', services:lsGet('wswt-services')||[], rent:lsGet('wswt-rent')!==false, party:false, occasion:'birthday', honoree:'', when:'', email:'', emailOk:false, joinCode:'', qi:0, ans:{genres:[]}, deck:0, passed:[], custom:'', voted:{}},
   host:{busy:false, botTimers:new Set()}
 };
 const writeQ = new Map();
@@ -594,12 +763,14 @@ function scoreParts(item, a){
   if(act){ if(item.cast.includes(act.n)) p.actor+=3; p.actor += .8*act.tags.reduce((s,t)=>s+tagW(t),0); }
   p.taste = 0;
   [SNACKS[a.snack],DRINKS[a.drink],PLAYLISTS[a.playlist]].forEach(x=>{ if(x) p.taste += .6*x.tags.reduce((s,t)=>s+tagW(t),0); });
+  /* universal edition: when rentals are allowed, titles already on the room's services still come first */
+  const g=S.game; if(g&&g.rent&&(g.services||[]).length&&EDITION==='open'&&Array.isArray(item.on)&&!item.on.some(k=>g.services.includes(k))) p.taste -= 1.5;
   p.total = p.genre+p.want+p.vibe+p.feel+p.len+p.actor+p.taste + (hash(item.id+(a.vibe||''))%100)/1000;
   return p;
 }
 function maxScore(a){ return ((a.genres||[]).length?5:0) + 4 + 1.2*2.2 + 1 + 2 + (ACTORS[a.actor]?3+.8*2.2:0) + (SNACKS[a.snack]?.6*1.8:0) + (PLAYLISTS[a.playlist]?.6*1.8:0) + (DRINKS[a.drink]?.6*1.8:0); }
 const matchPct = (item,a) => Math.max(5,Math.min(99,Math.round(100*score(item,a)/maxScore(a))));
-function suggestionsFor(a){ return CATALOG.filter(fits).map(c=>({c,s:score(c,a)})).sort((x,y)=>y.s-x.s).map(x=>x.c); }
+function suggestionsFor(a){ return pool().map(c=>({c,s:score(c,a)})).sort((x,y)=>y.s-x.s).map(x=>x.c); }
 
 /* ---------- room fit: picks that work for the whole room ----------
    Each person's fit is where a title lands in their own ranking of the lineup (1 = their top pick,
@@ -612,11 +783,11 @@ const tagWeight = (item,t) => { const i=item.tags?item.tags.indexOf(t):-1; retur
 const rankCache = new Map();
 function fitOf(item, a){
   if(!a||!item||!item.tags) return 0;
-  const key=JSON.stringify(a);
+  const list=pool().length?pool():CATALOG, key=poolCache.key+'#'+JSON.stringify(a);
   let sorted=rankCache.get(key);
-  if(!sorted){ sorted=CATALOG.map(c=>score(c,a)).sort((x,y)=>x-y); if(rankCache.size>200) rankCache.clear(); rankCache.set(key,sorted); }
-  const s=score(item,a); let below=0; while(below<sorted.length&&sorted[below]<s) below++;
-  return below/Math.max(1,sorted.length-1);
+  if(!sorted){ sorted=list.map(c=>score(c,a)).sort((x,y)=>x-y); if(rankCache.size>200) rankCache.clear(); rankCache.set(key,sorted); }
+  const s=score(item,a); let lo=0, hi=sorted.length; while(lo<hi){ const m=(lo+hi)>>1; if(sorted[m]<s) lo=m+1; else hi=m; }
+  return lo/Math.max(1,sorted.length-1);
 }
 function roomFit(item, players=S.players){
   const fs=players.filter(p=>p.answers).map(p=>fitOf(item,p.answers));
@@ -629,7 +800,7 @@ function roomFit(item, players=S.players){
 const roomPct = r => Math.max(5,Math.min(99,Math.round(100*r.score/.8)));   /* .8 is about as good as a real room gets */
 const groupScore = id => { const r=BY_ID[id]&&roomFit(BY_ID[id]); return r ? r.score : 0; };
 /* The room's ranking of every title that fits the audience, best first. */
-function roomRanking(){ return CATALOG.filter(fits).map(c=>({c,r:roomFit(c)})).filter(x=>x.r).sort((a,b)=>b.r.score-a.r.score); }
+function roomRanking(){ return pool().map(c=>({c,r:roomFit(c)})).filter(x=>x.r).sort((a,b)=>b.r.score-a.r.score); }
 function roomLabel(r){
   if(!r||r.n<2) return '';
   if(!r.miserable && r.min>=.4) return 'Works for everyone';
@@ -659,8 +830,8 @@ function whyLine(item,a){
   const p=scoreParts(item,a), bits=[], act=ACTORS[a.actor];
   if(item.unverified) return 'New on Angel. We\u2019ll know more about this one soon.';
   if (act && item.cast.includes(act.n)) bits.push('stars '+act.n+', your hangout pick');
-  const MAIN={funny:'made to make you laugh',cry:'built for a good cry',thrill:'gets your pulse up',learn:'teaches you something real',inspire:'built to lift you up',adventure:'takes you somewhere else'};
-  const SOME={funny:'has real laughs in it',cry:'will get you misty',thrill:'has real tension',learn:'teaches you something along the way',inspire:'leaves you lifted',adventure:'has a sense of escape'};
+  const MAIN={scare:'built to scare you',funny:'made to make you laugh',cry:'built for a good cry',thrill:'gets your pulse up',learn:'teaches you something real',inspire:'built to lift you up',adventure:'takes you somewhere else'};
+  const SOME={scare:'has real scares',funny:'has real laughs in it',cry:'will get you misty',thrill:'has real tension',learn:'teaches you something along the way',inspire:'leaves you lifted',adventure:'has a sense of escape'};
   if (p.want>=4) bits.push(MAIN[a.want]); else if (p.want>0) bits.push(SOME[a.want]);
   if (p.genre) bits.push('matches your genre pick');
   if (p.feel>0) bits.push(item.i<=2?'light enough for how you feel':'the right weight for your mood');
@@ -713,14 +884,14 @@ function subscribe(code){
   lsSet('wswt-session',{code, mode:S.mode});
   S.unsubs.push(S.db.doc('games/'+code).onSnapshot(sn=>{
     if(!sn.exists){ if(S.game){ toast('That game ended.'); leave(); } return; }
-    S.game=sn.data(); afterChange();
+    S.game=sn.data(); applyEdition(S.game.edition||'angel'); afterChange();
   }, ()=>{}));
   S.unsubs.push(S.db.collection('games/'+code+'/players').onSnapshot(qs=>{
     S.players=qs.docs.filter(d=>d.exists).map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.joinedAt||0)-(b.joinedAt||0));
     afterChange();
   }, ()=>{}));
 }
-function leave(){ S.unsubs.forEach(u=>u()); S.unsubs=[]; S.code=null; S.game=null; S.players=[]; lsSet('wswt-session',null);
+function leave(){ S.unsubs.forEach(u=>u()); S.unsubs=[]; S.code=null; S.game=null; S.players=[]; lsSet('wswt-session',null); applyEdition(S.ui.edition);
   Object.assign(S.ui,{screen:'home',qi:0,ans:{genres:[]},deck:0,passed:[],custom:'',voted:{}}); render(); }
 function afterChange(){
   const st=S.game&&S.game.stage;
@@ -730,10 +901,12 @@ function afterChange(){
 
 async function createGame(){
   const name=S.ui.name.trim(); if(!name){ toast('Add your name first.'); return; }
-  if(!S.ui.guild){ toast('Hosting comes with the Angel Guild. Anyone can join a night with a code.'); return; }
+  if(isAngel()&&!S.ui.guild){ toast('Hosting comes with the Angel Guild. Anyone can join a night with a code.'); return; }
+  if(!isAngel()&&!canHost(S.ui)){ toast('Pick another service or allow rentals so there’s enough to choose from.'); return; }
+  const lineup = isAngel() ? {edition:'angel'} : {edition:'open', services:S.ui.services.slice(), rent:!!S.ui.rent};
   lsSet('wswt-name',name);
   let code; for(let i=0;i<6;i++){ code=Array.from({length:4},()=> 'ABCDEFGHJKLMNPQRSTUVWXYZ'[Math.floor(Math.random()*24)]).join(''); const s=await S.db.doc('games/'+code).get(); if(!s.exists) break; }
-  await write('games/'+code,'set',{host:S.me.id, hostName:name, hostGuild:true, expected:S.ui.expected, audience:S.ui.audience, party: S.ui.party ? {occasion:S.ui.occasion, honoree:S.ui.honoree.trim().slice(0,30), when:S.ui.when.trim().slice(0,40)} : null, stage:'lobby', createdAt:Date.now()});
+  await write('games/'+code,'set',{host:S.me.id, hostName:name, hostGuild:isAngel(), ...lineup, expected:S.ui.expected, audience:S.ui.audience, party: S.ui.party ? {occasion:S.ui.occasion, honoree:S.ui.honoree.trim().slice(0,30), when:S.ui.when.trim().slice(0,40)} : null, stage:'lobby', createdAt:Date.now()});
   await write('games/'+code+'/players/'+S.me.id,'set',{name, joinedAt:Date.now(), done:{}, votes:{}, noms:[], customs:[]});
   subscribe(code);
 }
@@ -772,9 +945,9 @@ function buildBracket(){
   let ids=Object.keys(entries).sort((a,b)=>rank(b)-rank(a));
   const size = ids.length<=4 ? 4 : 8;
   ids=ids.slice(0,size);
-  const wild=CATALOG.filter(fits).map(c=>c.id).filter(id=>!entries[id]).sort((a,b)=>groupScore(b)-groupScore(a));
-  if(!wild.length) wild.push(...CATALOG.filter(c=>c.age==='all').map(c=>c.id).filter(id=>!entries[id]));
-  while(ids.length<size){ const id=wild.shift(); const c=BY_ID[id]; entries[id]={id,t:c.t,y:c.y,k:c.k,age:c.age,by:[],wild:true}; ids.push(id); }
+  const wild=pool().map(c=>c.id).filter(id=>!entries[id]).sort((a,b)=>groupScore(b)-groupScore(a));
+  if(wild.length<size-ids.length) wild.push(...CATALOG.filter(c=>c.age==='all'&&!entries[c.id]&&!wild.includes(c.id)).map(c=>c.id));
+  while(ids.length<size&&wild.length){ const id=wild.shift(); const c=BY_ID[id]; entries[id]={id,t:c.t,y:c.y,k:c.k,age:c.age,by:[],wild:true}; ids.push(id); }
   const order = size===8 ? [0,7,3,4,1,6,2,5] : [0,3,1,2];
   return {stage:'bracket', entries, rounds:[order.map(i=>ids[i])], cur:{r:0,m:0}, pending:false, lastResult:null};
 }
@@ -851,7 +1024,7 @@ async function addCustom(){
   const t=S.ui.custom.trim(); if(!t) return;
   const {noms,customs}=myNoms(); if(noms.length+customs.length>=MAX_NOMS){ toast(`You can nominate up to ${MAX_NOMS}. Remove one first.`); return; }
   const id='c-'+t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40);
-  const hit=CATALOG.find(c=>c.t.toLowerCase()===t.toLowerCase());
+  const hit=pool().find(c=>c.t.toLowerCase()===t.toLowerCase());
   S.ui.custom='';
   if(hit) return nominate(hit.id);
   await write(myPath(),'update',{customs:[...customs.filter(c=>c.id!==id),{id,t:t.slice(0,80)}]});
@@ -869,7 +1042,7 @@ async function vote(id){
 /* ---------- views ---------- */
 function header(){
   const badge = S.mode==='live' ? '<span class="badge live">Live sync on</span>' : '<span class="badge" title="This view can’t sync, so friends can’t join. Test friends still work.">Solo test mode</span>';
-  return `<div class="top"><span class="brand">What Should We Watch Tonight?</span>${badge}</div>`;
+  return `<div class="top"><span class="brand">What Should We Watch Tonight?${isAngel()?' <span class="edpill">Angel edition</span>':''}</span>${badge}</div>`;
 }
 function peopleChips(flag){
   return `<div class="people">${S.players.map(p=>`<span class="chip"><span class="av" style="background:${avColor(p.id)}">${esc(initials(p.name))}</span>${esc(p.name)}${p.id===S.me.id?' <small>(you)</small>':''}${S.game&&p.id===S.game.host&&S.game.hostGuild?' <span class="crown">Guild host</span>':''}${flag&&p.done&&p.done[flag]?' <span class="ok" aria-label="done">✓</span>':''}</span>`).join('')}</div>`;
@@ -881,7 +1054,7 @@ function vArt(){
     <input type="file" accept="image/*" id="up-${kind}-${key}" data-up="${kind}" data-key="${esc(key)}" hidden></div>`;
   return `${header()}
   <span class="eyebrow">Art manager</span><h2>Posters and photos</h2>
-  <p class="lede">Upload poster art and cast photos you have the rights to use, like images from Angel’s press kits. Everyone who opens the game sees them. Titles without art keep their color cards.</p>
+  <p class="lede">Upload poster art and cast photos you have the rights to use, like images from a studio press kit. Everyone who opens the game sees them. Titles without art keep their color cards.</p>
   ${S.assets?'':'<p class="read">Uploading isn’t available in this view. Open the page as its owner in Claude to add art.</p>'}
   <div class="panel stack"><span class="lbl">Poster art · tall images work best (2:3)</span>
     ${CATALOG.map(c=>row('title',c.id,c.t,!!ART.titles[c.id], ART.titles[c.id]?`<img src="${blob(ART.titles[c.id])}" alt="">`:'')).join('')}</div>
@@ -907,22 +1080,30 @@ function vHome(){
   <h1>What should we <em>watch</em> tonight?</h1>
   <p class="lede">Everyone grabs their phone. Tell the app how you feel, nominate a few titles, then battle it out in a bracket until one movie is left standing.</p>
   <div class="row"><button class="btn" data-act="go-host">Host a movie party</button><button class="btn ghost" data-act="go-join">Join with a code</button></div>
-  <p class="fine">Hosting comes with the Angel Guild. Joining is free for everyone.</p>
+  <p class="fine">${isAngel()?'Hosting comes with the Angel Guild. Joining is free for everyone.':'Free to host, free to join. Works with the services you already pay for.'}</p>
   ${S.assets?'<button class="btn small ghost" data-act="art" style="align-self:flex-start">Manage poster art and photos</button>':''}
   <div class="panel stack"><span class="eyebrow">How a night plays</span>
   <ol class="steps">
     <li><span><b>Count the room.</b> The host says how many are watching and gets a 4-letter code.</span></li>
     <li><span><b>Everyone joins.</b> Each person enters the code on their own phone.</span></li>
     <li><span><b>Mood check.</b> Four quick questions about energy, feelings, time, and genre.</span></li>
-    <li><span><b>Nominate.</b> The app pitches Angel titles matched to you. Say yes, pass, or add your own.</span></li>
+    <li><span><b>Nominate.</b> The app pitches ${isAngel()?'Angel titles':'titles on your services'} matched to you. Say yes, pass, or add your own.</span></li>
     <li><span><b>Bracket.</b> Head-to-head votes until one title wins the night.</span></li>
   </ol></div>
-  <p class="fine">${LINEUP.loaded?`${CATALOG.length} Angel titles, refreshed daily. Lineup details and posters come from TMDB. ${esc(LINEUP.notice)}`:'Titles come from a hand-picked sample of the Angel lineup for this prototype, not a live catalog.'}</p>`;
+  ${lineupNote()}`;
+}
+function lineupNote(){
+  if(isAngel()) return `<p class="fine">${LINEUP.loaded?`${CATALOG.length} Angel titles, refreshed daily. Lineup details and posters come from TMDB. ${esc(LINEUP.notice)}`:'Titles come from a hand-picked sample of the Angel lineup for this prototype, not a live catalog.'}</p>`;
+  return `<p class="fine">${UNIV.loaded?`${CATALOG.length} movies and series streaming in the ${esc(UNIV.region)}, refreshed daily. Titles and posters from TMDB, where-to-watch from JustWatch. ${esc(UNIV.notice.replace(/ Where-to-watch.*$/,''))}`:'A starter lineup of well-loved titles. Served from the web, the game pulls every movie and series streaming in the US, refreshed daily from TMDB.'}</p>`;
 }
 function vHost(){
   const u=S.ui;
   return `${header()}
   <span class="eyebrow">Host setup</span><h2>Who’s on the couch?</h2>
+  <div class="panel stack">
+    <label class="lbl">Lineup</label>
+    <div class="opts">${Object.values(EDITIONS).map(e=>`<button class="opt" data-act="ed" data-v="${e.key}" aria-pressed="${u.edition===e.key}">${esc(e.label)}<small>${esc(e.sub)}</small></button>`).join('')}</div>
+  </div>
   <div class="panel stack">
     <label class="lbl" for="name">Your name</label>
     <input type="text" id="name" data-bind="name" maxlength="24" placeholder="Aaron" value="${esc(u.name)}" autocomplete="given-name">
@@ -932,6 +1113,7 @@ function vHost(){
     <div class="opts">${Object.entries(AUDIENCE).map(([k,v])=>`<button class="opt" data-act="aud" data-v="${k}" aria-pressed="${u.audience===k}">${esc(v.n)}<small>${esc(v.s)}</small></button>`).join('')}</div>
     <p class="fine">Every suggestion and wildcard will fit ${esc(AUDIENCE[u.audience].label)}.</p>
   </div>
+  ${isAngel()?'':vServices(u)}
   <div class="panel stack party ${u.party?'on':''}">
     <button class="switch" data-act="party" aria-pressed="${u.party}"><span class="knob" aria-hidden="true"></span><span><b>Make it a Movie Party</b><small>A birthday, sleepover or neighborhood night. You get an invite to send.</small></span></button>
     ${u.party?`
@@ -942,9 +1124,25 @@ function vHost(){
     <label class="lbl" for="when">When? (optional)</label>
     <input type="text" id="when" data-bind="when" maxlength="40" placeholder="Saturday at 7" value="${esc(u.when)}">`:''}
   </div>
-  <button class="switch guild" data-act="guild" aria-pressed="${u.guild}"><span class="knob" aria-hidden="true"></span><span><b>I’m an Angel Guild member</b><small>Hosting comes with the Guild. Guests just need the code.</small></span></button>
-  <p class="fine">Prototype: this switch stands in for a real Guild sign-in.</p>
-  <div class="row"><button class="btn ghost" data-act="home">Back</button><button class="btn" data-act="create" ${u.guild?'':'disabled'}>${u.party?'Create the party':'Get our code'}</button></div>`;
+  ${isAngel()?`<button class="switch guild" data-act="guild" aria-pressed="${u.guild}"><span class="knob" aria-hidden="true"></span><span><b>I’m an Angel Guild member</b><small>Hosting comes with the Guild. Guests just need the code.</small></span></button>
+  <p class="fine">Prototype: this switch stands in for a real Guild sign-in.</p>`:''}
+  <div class="row"><button class="btn ghost" data-act="home">Back</button><button class="btn" data-act="create" ${canHost(u)?'':'disabled'}>${u.party?'Create the party':'Get our code'}</button></div>`;
+}
+const setupCount = u => CATALOG.filter(c=>ageOk(c,u.audience)&&streamsFor(c,u.services,u.rent)).length;
+const canHost = u => isAngel() ? u.guild : setupCount(u)>=4;
+function svcLogo(s, size=28){
+  return s.logo ? `<img class="svclogo" src="${esc(s.logo)}" alt="" width="${size}" height="${size}" loading="lazy">`
+    : `<span class="svclogo" style="background:${SVC_COLOR[s.key]||'#556'}" aria-hidden="true">${esc(s.n.replace(/[^A-Za-z0-9]/g,'').slice(0,1))}</span>`;
+}
+function vServices(u){
+  const n=setupCount(u), any=!u.services.length;
+  return `<div class="panel stack">
+    <label class="lbl">What can you stream tonight?</label>
+    <p class="fine" style="margin-top:-6px">Tap every service anyone in the room can log into. We’ll only pitch what you can press play on.</p>
+    <div class="svcs">${SERVICES.map(s=>`<button class="svc" data-act="svc" data-v="${s.key}" aria-pressed="${u.services.includes(s.key)}">${svcLogo(s)}<span>${esc(s.n)}</span></button>`).join('')}</div>
+    <button class="switch" data-act="rent" aria-pressed="${u.rent}"><span class="knob" aria-hidden="true"></span><span><b>Renting is fine too</b><small>Include titles you’d rent or buy for a few dollars.</small></span></button>
+    <p class="fine svccount${n<4?' warn':''}">${any?`No services picked yet, so everything is fair game: ${n} titles.`:n<4?`Only ${n} title${n===1?'':'s'} fit. Add a service or allow rentals.`:`${n} titles fit your room.`}</p>
+  </div>`;
 }
 function vJoin(){
   return `${header()}
@@ -960,7 +1158,8 @@ function vJoin(){
 function inviteText(g){
   const p=g.party, aud=AUDIENCE[g.audience||'adults'];
   const head = p ? OCCASIONS[p.occasion].line(p.honoree) : `${g.hostName} is hosting movie night!`;
-  return `${head} We want a movie everyone in the room will enjoy, so you get a vote.${p&&p.when?` ${p.when}.`:''}\n\nJoin with code ${S.code} on What Should We Watch Tonight? Every pick will fit ${aud.label}. No account needed.`;
+  const sv=(!isAngel()&&(g.services||[]).length)?` and streams on ${g.services.map(svcName).join(', ')}`:'';
+  return `${head} We want a movie everyone in the room will enjoy, so you get a vote.${p&&p.when?` ${p.when}.`:''}\n\nJoin with code ${S.code} on What Should We Watch Tonight? Every pick will fit ${aud.label}${sv}. No account needed.`;
 }
 function vInvite(g){
   const p=g.party, aud=AUDIENCE[g.audience||'adults'];
@@ -969,7 +1168,7 @@ function vInvite(g){
     <span class="eyebrow">${p?esc(OCCASIONS[p.occasion].n):'Movie night'}${p&&p.when?' · '+esc(p.when):''}</span>
     <h3>${esc(p?OCCASIONS[p.occasion].line(p.honoree):g.hostName+' is hosting movie night!')}</h3>
     <p>We want a movie everyone in the room will enjoy, so you get a vote.</p>
-    <div class="invite-facts"><span>Code <b>${S.code}</b></span><span>Fits <b>${esc(aud.label)}</b></span><span>No account needed</span></div>
+    <div class="invite-facts"><span>Code <b>${S.code}</b></span><span>Fits <b>${esc(aud.label)}</b></span>${!isAngel()&&(g.services||[]).length?`<span>On <b>${esc(g.services.map(svcName).join(', '))}</b></span>`:''}<span>No account needed</span></div>
     ${isHost()?`<div class="row tight"><button class="btn small" data-act="copyinvite">Copy invite</button><a class="btn small ghost" href="https://wa.me/?text=${encodeURIComponent(inviteText(g))}" target="_blank" rel="noopener">WhatsApp</a></div>`:''}
   </section>`;
 }
@@ -1015,7 +1214,7 @@ function vNominate(){
   const {noms,customs}=myNoms(), count=noms.length+customs.length;
   const others=S.players.filter(x=>x.answers).length>1;
   const deck=(others
-    ? CATALOG.filter(fits).map(c=>({c,s:.65*fitOf(c,p.answers)+.35*(roomFit(c)?.score||0)})).sort((a,b)=>b.s-a.s).map(x=>x.c)
+    ? pool().map(c=>({c,s:.65*fitOf(c,p.answers)+.35*(roomFit(c)?.score||0)})).sort((a,b)=>b.s-a.s).map(x=>x.c)
     : suggestionsFor(p.answers)).filter(c=>!noms.includes(c.id));
   const favs=others?new Set(roomRanking().slice(0,3).map(x=>x.c.id)):new Set();
   const cur=deck[S.ui.deck % Math.max(deck.length,1)];
@@ -1034,6 +1233,7 @@ function vNominate(){
   </div>
   <div class="deck-info stack">
     <p class="match">${matchPct(cur,p.answers)}% match for you${others?` · ${roomPct(roomFit(cur))}% room fit`:''}</p>
+    ${whereText(cur)?`<p class="where">${esc(whereText(cur))}</p>`:''}
     ${others?`<p class="roomtag${roomFit(cur).miserable?' risky':''}">${favs.has(cur.id)?'<b>Room favorite</b> · ':''}${esc(roomLabel(roomFit(cur)))}</p>`:''}
     ${castRow(cur)}
     <p class="blurb">${esc(cur.b)}</p>
@@ -1157,8 +1357,8 @@ function standings(){
   return {rows,total:matches.length,reach,T};
 }
 /* Where shares send people. Swap for a campaign or referral link. */
-const SHARE_URL = 'https://www.angel.com/guild';
-const TAGS = '#WhatShouldWeWatchTonight #MovieNight #AngelGuild';
+const shareUrl = () => ED().shareUrl();
+const tags = () => ED().tags;
 const BADGES = {
   mogul:{n:'Movie Mogul',c:'#FFC145',glyph:'crown',line:x=>`Won the room with ${x.pts} points`,
     cap:x=>`Pretty much a movie mogul now. I won our movie night bracket with ${x.pts} points. Tonight's feature: ${x.title}.`},
@@ -1197,7 +1397,7 @@ function badgesFor(st){
 function badgeCtx(st, row){ return {pts:row.pts, calls:row.calls, contrary:row.contrary, total:st.total, title:S.game.entries[S.game.winner].t, name:row.p.name}; }
 function captionFor(k, x, short){
   const base=BADGES[k].cap(x);
-  return short ? `${base} ${TAGS}` : `${base}\n\nWe settle movie night with a bracket now. Find your next watch on Angel.\n${TAGS}`;
+  return short ? `${base} ${tags()}` : `${base}\n\nWe settle movie night with a bracket now.${isAngel()?' Find your next watch on Angel.':''}\n${tags()}`;
 }
 
 /* ---- badge image (1080x1350, feed-sized) drawn on canvas ---- */
@@ -1217,33 +1417,33 @@ function wrapText(x, text, maxW){ const words=String(text).split(/\s+/), lines=[
 async function makeBadgeImage(k, ctx){
   try{ await Promise.all(['900 100px "Big Shoulders Display"','700 40px "Figtree"','600 40px "Figtree"'].map(f=>document.fonts.load(f))); }catch{}
   const W=1080,H=1350, c=document.createElement('canvas'); c.width=W; c.height=H; const x=c.getContext('2d'); const B=BADGES[k];
-  const g=x.createLinearGradient(0,0,0,H); g.addColorStop(0,'#2a1f57'); g.addColorStop(1,'#120e24'); x.fillStyle=g; x.fillRect(0,0,W,H);
+  const g=x.createLinearGradient(0,0,0,H); g.addColorStop(0,ED().badgeBg[0]); g.addColorStop(1,ED().badgeBg[1]); x.fillStyle=g; x.fillRect(0,0,W,H);
   const glow=x.createRadialGradient(W/2,470,40,W/2,470,520); glow.addColorStop(0,B.c+'55'); glow.addColorStop(1,'#00000000'); x.fillStyle=glow; x.fillRect(0,0,W,H);
   // marquee bulbs
-  x.fillStyle='#FFC145'; const m=34, step=44;
+  const GOLD=isAngel()?'#FFC145':'#FFD23F'; x.fillStyle=GOLD; const m=34, step=44;
   for(let p=m;p<=W-m;p+=step){ [m,H-m].forEach(yy=>{ x.beginPath(); x.arc(p,yy,7,0,7); x.fill(); }); }
   for(let p=m+step;p<H-m;p+=step){ [m,W-m].forEach(xx=>{ x.beginPath(); x.arc(xx,p,7,0,7); x.fill(); }); }
   x.textAlign='center'; x.textBaseline='alphabetic';
-  x.fillStyle='#FFC145'; x.font='800 34px "Big Shoulders Display", Impact, sans-serif'; x.letterSpacing='6px';
+  x.fillStyle=GOLD; x.font='800 34px "Big Shoulders Display", Impact, sans-serif'; x.letterSpacing='6px';
   x.fillText('WHAT SHOULD WE WATCH TONIGHT?', W/2, 128); x.letterSpacing='0px';
   // medallion
   const cy=395, R=180;
   x.beginPath(); x.arc(W/2,cy,R+18,0,7); x.fillStyle='#ffffff22'; x.fill();
   x.beginPath(); x.arc(W/2,cy,R,0,7); x.fillStyle=B.c; x.fill();
-  x.beginPath(); x.arc(W/2,cy,R-22,0,7); x.strokeStyle='#15112A44'; x.lineWidth=6; x.stroke();
-  drawGlyph(x,B.glyph,W/2,cy,190,'#15112A');
+  x.beginPath(); x.arc(W/2,cy,R-22,0,7); x.strokeStyle=ED().badgeInk+'44'; x.lineWidth=6; x.stroke();
+  drawGlyph(x,B.glyph,W/2,cy,190,ED().badgeInk);
   x.fillStyle='#F4F0FF'; x.font='900 112px "Big Shoulders Display", Impact, sans-serif';
   const nameLines=wrapText(x,B.n.toUpperCase(),W-160).slice(0,2);
   let y = nameLines.length>1 ? 700 : 740; nameLines.forEach(l=>{ x.fillText(l,W/2,y); y+=100; });
   x.fillStyle='#ABA2D0'; x.font='600 40px "Figtree", system-ui, sans-serif'; x.fillText(B.line(ctx), W/2, y+4); y+=88;
-  x.fillStyle='#FFC145'; x.font='900 64px "Big Shoulders Display", Impact, sans-serif'; x.fillText(ctx.name.toUpperCase(), W/2, y); y+=70;
-  x.strokeStyle='#3D3570'; x.lineWidth=3; x.beginPath(); x.moveTo(W/2-160,y); x.lineTo(W/2+160,y); x.stroke(); y+=58;
+  x.fillStyle=GOLD; x.font='900 64px "Big Shoulders Display", Impact, sans-serif'; x.fillText(ctx.name.toUpperCase(), W/2, y); y+=70;
+  x.strokeStyle=ED().badgeLine; x.lineWidth=3; x.beginPath(); x.moveTo(W/2-160,y); x.lineTo(W/2+160,y); x.stroke(); y+=58;
   x.fillStyle='#FF6F59'; x.font='700 28px "Figtree", system-ui, sans-serif'; x.letterSpacing='4px'; x.fillText('TONIGHT’S FEATURE', W/2, y); x.letterSpacing='0px'; y+=62;
   let fs=62, t=ctx.title.toUpperCase(); x.fillStyle='#F4F0FF';
   do { x.font=`900 ${fs}px "Big Shoulders Display", Impact, sans-serif`; fs-=2; } while(x.measureText(t).width>W-180 && fs>40);
   while(x.measureText(t).width>W-180 && t.length>4) t=t.slice(0,-2).trimEnd()+'\u2026';
   x.fillText(t,W/2,y);
-  x.fillStyle='#ABA2D0'; x.font='600 30px "Figtree", system-ui, sans-serif'; x.fillText('Settle your movie night on Angel · angel.com/guild', W/2, H-78);
+  x.fillStyle='#ABA2D0'; x.font='600 30px "Figtree", system-ui, sans-serif'; x.fillText(ED().badgeFoot, W/2, H-78);
   return c.toDataURL('image/png');
 }
 const imgCache = {};
@@ -1254,16 +1454,16 @@ function badgeImg(k, ctx){
 }
 function dataUrlBytes(u){ const b=atob(u.split(',')[1]); const a=new Uint8Array(b.length); for(let i=0;i<b.length;i++) a[i]=b.charCodeAt(i); return a; }
 function shareLinks(k, x){
-  const long=captionFor(k,x,false), short=captionFor(k,x,true), u=encodeURIComponent(SHARE_URL), L=encodeURIComponent(long+'\n'+SHARE_URL);
+  const SU=shareUrl(), long=captionFor(k,x,false), short=captionFor(k,x,true), u=encodeURIComponent(SU), L=encodeURIComponent(SU?long+'\n'+SU:long);
   return [
-    ['X','https://x.com/intent/tweet?text='+encodeURIComponent(short)+'&url='+u],
-    ['Facebook','https://www.facebook.com/sharer/sharer.php?u='+u],
+    ['X','https://x.com/intent/tweet?text='+encodeURIComponent(short)+(SU?'&url='+u:'')],
+    SU&&['Facebook','https://www.facebook.com/sharer/sharer.php?u='+u],
     ['Threads','https://www.threads.net/intent/post?text='+L],
-    ['Bluesky','https://bsky.app/intent/compose?text='+encodeURIComponent(short+' '+SHARE_URL)],
-    ['LinkedIn','https://www.linkedin.com/sharing/share-offsite/?url='+u],
+    ['Bluesky','https://bsky.app/intent/compose?text='+encodeURIComponent(SU?short+' '+SU:short)],
+    SU&&['LinkedIn','https://www.linkedin.com/sharing/share-offsite/?url='+u],
     ['WhatsApp','https://wa.me/?text='+L],
-    ['Reddit','https://www.reddit.com/submit?url='+u+'&title='+encodeURIComponent(BADGES[k].cap(x))]
-  ];
+    SU&&['Reddit','https://www.reddit.com/submit?url='+u+'&title='+encodeURIComponent(BADGES[k].cap(x))]
+  ].filter(Boolean);
 }
 function vBadges(st, mine){
   const row=st.rows.find(r=>r.p.id===S.me.id); if(!row||!mine||!mine.length) return '';
@@ -1298,7 +1498,7 @@ function vBadges(st, mine){
     <p class="fine">Instagram and TikTok don’t accept posts from web links. Tap one to save the image and copy your caption, then post from the app. The other buttons open a ready-to-post draft with your caption.</p>
   </section>`;
 }
-function letterboxdReview(k,x){ return `Watched ${x.title} after it won our movie night bracket. ${BADGES[k].cap(x)} Picked with What Should We Watch Tonight? on Angel.`; }
+function letterboxdReview(k,x){ return `Watched ${x.title} after it won our movie night bracket. ${BADGES[k].cap(x)} Picked with What Should We Watch Tonight?${isAngel()?' on Angel':''}.`; }
 
 function vScores(){
   const st=standings(), g=S.game, {rows,total,reach}=st, bmap=badgesFor(st);
@@ -1329,11 +1529,12 @@ function vKeep(){
     <span class="eyebrow">Keep tonight</span>
     ${saved?`<h3>You’re on the list</h3><p class="lede">Your badge, tonight’s recipes and a heads-up next time ${esc(g.hostName)} throws a movie party are headed your way.</p>`:`
     <h3>Want your badge and the recipes?</h3>
-    <p class="lede">Drop your email and we’ll send your badge image, tonight’s snack and drink recipes, and a heads-up when a new Angel movie fits your mood profile.</p>
+    <p class="lede">Drop your email and we’ll send your badge image, tonight’s snack and drink recipes, and a heads-up when ${isAngel()?'a new Angel movie':'something new on your services'} fits your mood profile.</p>
     <div class="row"><input type="email" id="email" data-bind="email" placeholder="you@example.com" value="${esc(S.ui.email)}" autocomplete="email" style="flex:3 1 200px"><button class="btn small" data-act="email">Send them to me</button></div>
-    <label class="check"><input type="checkbox" id="emailOk" data-act="emailok" ${S.ui.emailOk?'checked':''}> Angel can also email me about movie nights and new releases.</label>
+    <label class="check"><input type="checkbox" id="emailOk" data-act="emailok" ${S.ui.emailOk?'checked':''}> ${isAngel()?'Angel can also':'You can also'} email me about movie nights and new releases.</label>
     <p class="fine">Totally optional. Skip it and keep the party going. Prototype: emails are saved privately but not sent yet.</p>`}
-    ${host?'':`<div class="hostcta"><div class="stack" style="min-width:0"><b>Want to throw the next one?</b><small>Hosting a movie party comes with the Angel Guild.</small></div><a class="btn small coral" href="${SHARE_URL}" target="_blank" rel="noopener">See the Guild</a></div>`}
+    ${host?'':isAngel()?`<div class="hostcta"><div class="stack" style="min-width:0"><b>Want to throw the next one?</b><small>Hosting a movie party comes with the Angel Guild.</small></div><a class="btn small coral" href="${shareUrl()}" target="_blank" rel="noopener">See the Guild</a></div>`
+      :`<div class="hostcta"><div class="stack" style="min-width:0"><b>Want to throw the next one?</b><small>Hosting is free. Pick your services and get a code.</small></div><button class="btn small coral" data-act="hostnext">Host a night</button></div>`}
   </section>`;
 }
 async function saveEmail(){
@@ -1346,6 +1547,22 @@ async function saveEmail(){
   }
   S.ui.emailSaved=true; render();
 }
+function watchLink(e, info){
+  if(info&&info.tmdb) return `https://www.themoviedb.org/${info.tmdb}/watch?locale=${encodeURIComponent(UNIV.region||'US')}`;
+  return 'https://www.justwatch.com/us/search?q='+encodeURIComponent(e.t);
+}
+function vWhere(e, info){
+  if(isAngel()) return info?`<a class="btn" href="https://www.angel.com/watch" target="_blank" rel="noopener">Find it on Angel</a>`:`<p class="fine">A pick from the room. Pull it up wherever you watch.</p>`;
+  const w=info&&whereFor(info), svc=k=>SERVICES.find(s=>s.key===k)||{key:k,n:k};
+  const chips=w?[...w.mine,...w.other]:[];
+  return `<div class="stack" style="align-items:center;gap:10px">
+    ${w&&!w.mine.length&&(S.game.services||[]).length?`<p class="fine">Not on your services tonight. ${w.rent?'Rent or buy it'+(chips.length?', or it streams on:':'.'):'It streams on:'}</p>`:''}
+    ${chips.length?`<div class="svcrow">${chips.map(k=>`<span class="svcchip${w.mine.includes(k)?' yours':''}">${svcLogo(svc(k),22)}${esc(svc(k).n)}</span>`).join('')}</div>`
+      :w&&w.rent&&w.mine.length?'<p class="fine">Available to rent or buy.</p>':''}
+    <a class="btn" href="${esc(watchLink(e,info))}" target="_blank" rel="noopener">See where to watch</a>
+    ${w?'<p class="fine">Where-to-watch data from JustWatch, via TMDB.</p>':''}
+  </div>`;
+}
 function vWinner(){
   const g=S.game, w=g.entries[g.winner];
   const info=BY_ID[g.winner];
@@ -1356,7 +1573,7 @@ function vWinner(){
     <h2>${esc(w.t)}</h2>
     ${info?`<p class="lede">${esc(info.b)}</p>`:''}
     ${info&&S.players.length>1?`<div class="roomwhy"><span class="eyebrow">Why it works for this room · ${roomPct(roomFit(info))}% fit</span><p>${esc(roomWhy(info))}</p></div>`:''}
-    ${info?`<a class="btn" href="https://www.angel.com/watch" target="_blank" rel="noopener">Find it on Angel</a>`:`<p class="fine">A pick from the room. Pull it up wherever you watch.</p>`}
+    ${vWhere(w, info)}
   </div>
   ${vScores()}
   ${vSnack()}
@@ -1409,6 +1626,10 @@ document.addEventListener('click',async e=>{
     case 'occ': S.ui.occasion=el.dataset.v; render(); break;
     case 'party': S.ui.party=!S.ui.party; render(); break;
     case 'guild': S.ui.guild=!S.ui.guild; render(); break;
+    case 'ed': S.ui.edition=el.dataset.v; lsSet('wswt-edition',S.ui.edition); applyEdition(S.ui.edition); render(); break;
+    case 'svc': { const v=el.dataset.v, sv=S.ui.services; S.ui.services = sv.includes(v) ? sv.filter(x=>x!==v) : [...sv,v]; lsSet('wswt-services',S.ui.services); render(); break; }
+    case 'rent': S.ui.rent=!S.ui.rent; lsSet('wswt-rent',S.ui.rent); render(); break;
+    case 'hostnext': leave(); S.ui.screen='host'; render(); break;
     case 'copyinvite': toast(await copyText(inviteText(S.game))?'Invite copied. Paste it in your group text.':'Couldn\u2019t copy. The code is '+S.code+'.'); break;
     case 'emailok': S.ui.emailOk=el.checked; break;
     case 'email': await saveEmail(); break;
@@ -1433,7 +1654,8 @@ document.addEventListener('click',async e=>{
       const resets=S.players.map(p=>write(gamePath()+'/players/'+p.id,'set',{name:p.name,bot:!!p.bot,joinedAt:p.joinedAt,done:{},votes:{},noms:[],customs:[]}));
       await Promise.all(resets); S.host.botTimers.clear();
       Object.assign(S.ui,{qi:0,ans:{genres:[]},deck:0,custom:'',voted:{}});
-      await write(gamePath(),'set',{host:S.game.host,hostName:S.game.hostName,hostGuild:true,expected:S.game.expected,audience:S.game.audience||'adults',party:S.game.party||null,stage:'mood',createdAt:Date.now()});
+      const keep=S.game.edition==='open'?{edition:'open',services:S.game.services||[],rent:!!S.game.rent}:{edition:S.game.edition||'angel'};
+      await write(gamePath(),'set',{host:S.game.host,hostName:S.game.hostName,hostGuild:!!S.game.hostGuild,...keep,expected:S.game.expected,audience:S.game.audience||'adults',party:S.game.party||null,stage:'mood',createdAt:Date.now()});
       break; }
   }
   }catch(err){ /* toast already shown by write() */ }
@@ -1507,8 +1729,11 @@ function confetti(){
 (function boot(){
   let local=lsGet('wswt-pid'); if(!local){ local='p-'+rid(10); lsSet('wswt-pid',local); }
   S.me.id=local;
+  S.ui.edition=editionFromUrl()||lsGet('wswt-edition')||'open';
+  applyEdition(S.ui.edition);
   render();
   loadLineup();
+  loadUniversal();
   if(!window.claude||!window.claude.use) return;
   window.claude.use('downloads').then(d=>{ S.dl=d; }).catch(()=>{});
   window.claude.use('assets').then(a=>{ S.assets=a; render(); }).catch(()=>{});

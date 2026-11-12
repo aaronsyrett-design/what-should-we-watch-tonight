@@ -5,6 +5,13 @@ A multiplayer group movie-picking party game for Angel Studios Guild members, bu
 
 Business thesis: hosting is the Guild "superpower". Guests play the full game free and join the Guild to host the next one (a Tupperware-party growth loop). Fun first, never a sales demo.
 
+## Editions (November 2026)
+The game is now universal by default, with the Angel version kept as a switchable edition so the Angel pitch still works.
+- **open (Everything streaming):** catalog from `data/universal.json` (daily TMDB sync, up to 900 US titles with `on` = services and `rent`), falling back to the 48-title `STARTER` list in `index.html`. Host ticks services (`netflix, prime, disney, max, hulu, apple, peacock, paramount, angel, free`) and a "renting is fine" switch; `fits()` keeps only titles on those services (or rentable when allowed); rentals rank 1.5 points lower for everyone. No Guild gate. Midnight-blue skin (gold `#FFD23F`, cherry `#FF5A6E`, teal `#3DDBC4`). Extra mood options: "Scare me", genres Sci-fi & Fantasy, Horror, Romance (Faith dropped), and eight universal hangout actors (Tom Hanks, Ryan Reynolds, Dwayne Johnson, Pedro Pascal, Keanu Reeves, Meryl Streep, Melissa McCarthy, David Attenborough). Winner screen: service chips, "See where to watch" (TMDB watch page), JustWatch credit.
+- **angel (Angel Studios edition):** everything below, unchanged. Chosen on host setup or with `?edition=angel`.
+- `games/{CODE}` gains `edition`, `services[]`, `rent`. Games without `edition` are treated as Angel, so older games keep working. Guests take the edition and skin from the game they join.
+- Editions live in `EDITIONS` (label, share URL, hashtags, badge colors and footer). A new studio edition = a new entry, a catalog, and a skin block in CSS.
+
 ## Current build
 - One self-contained HTML file (`index.html`), vanilla JS, no framework.
 - Fonts: Big Shoulders Display (display), Figtree (body), JetBrains Mono (numbers).
