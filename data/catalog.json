@@ -1843,6 +1843,41 @@
       "poster": "https://image.tmdb.org/t/p/w500/9Bardx7hBE9ACYdWJMkBCdRUU1C.jpg"
     },
     {
+      "id": "tmdb-tv-283654",
+      "tmdb": "tv/283654",
+      "t": "Home to Harmony",
+      "y": 2026,
+      "k": "Series",
+      "age": "kids",
+      "cert": "TV-PG",
+      "g": [
+        "drama",
+        "family",
+        "faith"
+      ],
+      "tags": [
+        "family",
+        "faith",
+        "heart"
+      ],
+      "i": 1,
+      "len": "short",
+      "cast": [
+        "Ferelith Young",
+        "Hudson Robert Wurster",
+        "Wendy Lyon",
+        "Ted Atherton"
+      ],
+      "b": "Widowed pastor Sam Gardner returns to his quirky Indiana hometown with his children to lead Harmony Community Church. While reconnecting with the town's unique residents, Sam rediscovers his…",
+      "keywords": [
+        "based on novel or book",
+        "indiana, usa",
+        "church",
+        "christian faith"
+      ],
+      "poster": "https://image.tmdb.org/t/p/w500/9jJxkespxCL1Zdyvpqq74xaFuuN.jpg"
+    },
+    {
       "id": "tmdb-tv-256106",
       "tmdb": "tv/256106",
       "t": "Homestead: The Series",
