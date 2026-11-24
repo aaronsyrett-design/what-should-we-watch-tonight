@@ -1529,6 +1529,36 @@
       "poster": "https://image.tmdb.org/t/p/w500/rakkxsFf2rZ3yhwYzS0GVr1UzIy.jpg"
     },
     {
+      "id": "tmdb-movie-1827862",
+      "tmdb": "movie/1827862",
+      "t": "An Angel Messed Up My Christmas",
+      "y": 2026,
+      "k": "Movie",
+      "age": "teen",
+      "cert": "NR",
+      "g": [
+        "family"
+      ],
+      "tags": [
+        "family",
+        "heart"
+      ],
+      "i": 1,
+      "len": "movie",
+      "cast": [
+        "Isaac Akers",
+        "Sam Cooper",
+        "Teo Santos",
+        "Anthony Hord"
+      ],
+      "b": "When an angel sends Elliot back to high school during Christmas, changing one thing creates a future without the family he loves. Now he must undo his mistakes to save them, and rediscover what…",
+      "keywords": [
+        "time travel",
+        "christmas"
+      ],
+      "poster": "https://image.tmdb.org/t/p/w500/dxVhiPeaaNptaHgXHU9m6lHGRK2.jpg"
+    },
+    {
       "id": "tmdb-movie-513387",
       "tmdb": "movie/513387",
       "t": "Andrew Rivers: Laffy Taffy",
