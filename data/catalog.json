@@ -1873,6 +1873,42 @@
       "poster": "https://image.tmdb.org/t/p/w500/9Bardx7hBE9ACYdWJMkBCdRUU1C.jpg"
     },
     {
+      "id": "tmdb-movie-1461490",
+      "tmdb": "movie/1461490",
+      "t": "Hershey",
+      "y": 2026,
+      "k": "Movie",
+      "age": "kids",
+      "cert": "PG",
+      "g": [
+        "drama",
+        "true"
+      ],
+      "tags": [
+        "inspire",
+        "learn",
+        "heart",
+        "epic"
+      ],
+      "i": 2,
+      "len": "movie",
+      "cast": [
+        "Finn Wittrock",
+        "Alexandra Daddario",
+        "Alan Ruck",
+        "Richard Kind"
+      ],
+      "b": "Based on the life of Milton Hershey, founder of the iconic Hershey chocolate company. Milton's grit and determination to conquer the world of candy-making propel him from bankruptcy to monumental…",
+      "keywords": [
+        "chocolate",
+        "family business ",
+        "based on true story",
+        "biographical drama",
+        "chocolatier"
+      ],
+      "poster": "https://image.tmdb.org/t/p/w500/ojd8Gu2bPsOzdMz6Ip5AYDu4Vki.jpg"
+    },
+    {
       "id": "tmdb-tv-283654",
       "tmdb": "tv/283654",
       "t": "Home to Harmony",
